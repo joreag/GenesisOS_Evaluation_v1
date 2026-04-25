@@ -18,7 +18,7 @@ The project is divided into three core tiers, all included here:
 
     **Included AI Models (Alpha v0.1)**
 
-    This evaluation package includes 5 pre-trained models for immediate testing within the GenesisOS Dojo environment, representing our multi-agent "Council" architecture:
+    **Due to Github file size restrictions, Please contact us for access to the models themselves.  The 4 Sentinels are 34MB each and Guardian Prime is 800MB+.  Will update with future download locaton.** This evaluation package includes 5 pre-trained models for immediate testing within the GenesisOS Dojo environment, representing our multi-agent "Council" architecture:
 
     *   **Security Sentinels:** A council of four specialized `pico` models designed for adversarial debate and analysis.
         *   `guardian_blue`: The Architect/Logic model.
