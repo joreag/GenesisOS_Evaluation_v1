@@ -58,7 +58,7 @@ This is a developer-focused, architectural prototype. It is **not** a production
 
 ### Getting Started
 
-*(This section is taken directly from the `SetupINFO.md` we created for Steve).*
+*(This section is taken directly from the `SetupINFO.md`).*
 
 1.  **Install Prerequisites:** (Node.js, Rust, Python 3.10+, Ubuntu Build Dependencies).
 2.  **Boot The Hive:** `cd the_hive`, create `venv`, `pip install`, and run `python3 sentinel_server_v2.py`.
