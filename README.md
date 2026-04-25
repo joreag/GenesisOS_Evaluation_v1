@@ -18,7 +18,7 @@ The project is divided into three core tiers, all included here:
 
     **Included AI Models (Alpha v0.1)**
 
-    **Due to Github file size restrictions, Please contact us for access to the models themselves.  The 4 Sentinels are 34MB each and Guardian Prime is 800MB+.  Please go to our HuggingFace Repo for the AI models.  Download and place in the_hive/models directory and good to go.  https://huggingface.co/joreag** This evaluation package includes 5 pre-trained models for immediate testing within the GenesisOS Dojo environment, representing our multi-agent "Council" architecture:
+    **Due to Github file size restrictions, Please go to our HuggingFace Repo for the AI models.  The 4 Sentinels are 34MB each and Guardian Prime is 800MB+.  Download and place in the_hive/models directory and good to go.  https://huggingface.co/joreag** This evaluation package includes 5 pre-trained models for immediate testing within the GenesisOS Dojo environment, representing our multi-agent "Council" architecture:
 
     *   **Security Sentinels:** A council of four specialized `pico` models designed for adversarial debate and analysis.
         *   `guardian_blue`: The Architect/Logic model.
