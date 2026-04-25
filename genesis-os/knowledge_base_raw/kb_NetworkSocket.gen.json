@@ -1,0 +1,222 @@
+{
+  "file_id": "NetworkSocket.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "object_id": {
+          "type": "String",
+          "name": "object_id",
+          "initialValue": null
+        },
+        "owner_id": {
+          "type": "String",
+          "name": "owner_id",
+          "initialValue": null
+        },
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "command": {
+          "type": "String",
+          "name": "command",
+          "initialValue": ""
+        },
+        "protocol": {
+          "type": "String",
+          "name": "protocol",
+          "initialValue": null
+        },
+        "local_port": {
+          "type": "Int",
+          "name": "local_port",
+          "initialValue": null
+        },
+        "connection_state": {
+          "type": "String",
+          "name": "connection_state",
+          "initialValue": "CLOSED"
+        },
+        "remote_ip": {
+          "type": "String",
+          "name": "remote_ip",
+          "initialValue": ""
+        },
+        "remote_identity_hash": {
+          "type": "String",
+          "name": "remote_identity_hash",
+          "initialValue": ""
+        },
+        "security_policy_id": {
+          "type": "String",
+          "name": "security_policy_id",
+          "initialValue": null
+        },
+        "tx_buffer": {
+          "type": "ByteStream",
+          "name": "tx_buffer",
+          "initialValue": "null"
+        },
+        "rx_buffer": {
+          "type": "ByteStream",
+          "name": "rx_buffer",
+          "initialValue": "null"
+        },
+        "input_target_ip": {
+          "type": "String",
+          "name": "input_target_ip",
+          "initialValue": null
+        },
+        "input_payload": {
+          "type": "ByteStream",
+          "name": "input_payload",
+          "initialValue": null
+        },
+        "network_hardware_interrupt_payload": {
+          "type": "ByteStream",
+          "name": "network_hardware_interrupt_payload",
+          "initialValue": null
+        },
+        "proposed_remote_ip": {
+          "type": "String",
+          "name": "proposed_remote_ip",
+          "initialValue": "input_target_ip"
+        },
+        "proposed_connection_state": {
+          "type": "String",
+          "name": "proposed_connection_state",
+          "initialValue": "ESTABLISHED"
+        },
+        "proposed_tx_data": {
+          "type": "ByteStream",
+          "name": "proposed_tx_data",
+          "initialValue": "input_payload"
+        },
+        "proposed_new_tx_buffer": {
+          "type": "ByteStream",
+          "name": "proposed_new_tx_buffer",
+          "initialValue": "append(tx_buffer, proposed_tx_data)"
+        },
+        "proposed_rx_data": {
+          "type": "ByteStream",
+          "name": "proposed_rx_data",
+          "initialValue": "network_hardware_interrupt_payload"
+        },
+        "proposed_new_rx_buffer": {
+          "type": "ByteStream",
+          "name": "proposed_new_rx_buffer",
+          "initialValue": "append(rx_buffer, proposed_rx_data)"
+        },
+        "tx_concept_vector": {
+          "type": "Array<Float>",
+          "name": "tx_concept_vector",
+          "initialValue": "thinkify(proposed_tx_data)"
+        },
+        "rx_concept_vector": {
+          "type": "Array<Float>",
+          "name": "rx_concept_vector",
+          "initialValue": "thinkify(proposed_rx_data)"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(action == \"SEND\") || (action == \"RECEIVE\")",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"SEND\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(action == \"SEND\") || (action == \"RECEIVE\")",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"CONNECT\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"CONNECT\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"SEND\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"RECEIVE\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "proposed_remote_ip": [
+      "input_target_ip"
+    ],
+    "proposed_tx_data": [
+      "input_payload"
+    ],
+    "proposed_new_tx_buffer": [
+      "tx_buffer",
+      "proposed_tx_data"
+    ],
+    "proposed_rx_data": [
+      "network_hardware_interrupt_payload"
+    ],
+    "proposed_new_rx_buffer": [
+      "rx_buffer",
+      "proposed_rx_data"
+    ],
+    "tx_concept_vector": [
+      "proposed_tx_data"
+    ],
+    "rx_concept_vector": [
+      "proposed_rx_data"
+    ]
+  },
+  "raw_content": "Ly8gTmV0d29ya1NvY2tldC5nZW4gdjAuMi4xCi8vIFRoZSBNRE8gcmVwcmVzZW50aW5nIGEgbmV0d29yayBjb25uZWN0aW9uIGluIEdlbmVzaXNPUy4KCk5vZGUgTmV0d29ya1NvY2tldCB7CiAgICAvLyAxLiBNQVA6IFRoZSBjb21wbGV0ZSBjb250ZXh0IG9mIHRoZSBjb25uZWN0aW9uLgogICAgTWFwIHsKICAgICAgICAvLyAuLi4gKEluaGVyaXRlZCBwcm9wZXJ0aWVzIHJlbWFpbiB0aGUgc2FtZSkgLi4uCiAgICAgICAgcmVxdWlyZXMgb2JqZWN0X2lkOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgb3duZXJfaWQ6IFN0cmluZzsKICAgICAgICByZXF1aXJlcyBhY3Rpb246IFN0cmluZzsKICAgICAgICByZXF1aXJlcyByZXF1ZXN0b3JfaWQ6IFN0cmluZzsKICAgICAgICBzdGF0ZSBjb21tYW5kOiBTdHJpbmcgPSAiIjsKICAgICAgICAKICAgICAgICAvLyAtLS0gU29ja2V0LVNwZWNpZmljIFN0YXRlIC0tLQogICAgICAgIHJlcXVpcmVzIHByb3RvY29sOiBTdHJpbmc7ICAgICAKICAgICAgICByZXF1aXJlcyBsb2NhbF9wb3J0OiBJbnQ7ICAgICAgCiAgICAgICAgc3RhdGUgY29ubmVjdGlvbl9zdGF0ZTogU3RyaW5nID0gIkNMT1NFRCI7CiAgICAgICAgc3RhdGUgcmVtb3RlX2lwOiBTdHJpbmcgPSAiIjsKICAgICAgICBzdGF0ZSByZW1vdGVfaWRlbnRpdHlfaGFzaDogU3RyaW5nID0gIiI7IAogICAgICAgIHJlcXVpcmVzIHNlY3VyaXR5X3BvbGljeV9pZDogU3RyaW5nOyAKICAgICAgICBzdGF0ZSB0eF9idWZmZXI6IEJ5dGVTdHJlYW0gPSBudWxsOyAvLyBDT1JSRUNURUQKICAgICAgICBzdGF0ZSByeF9idWZmZXI6IEJ5dGVTdHJlYW0gPSBudWxsOyAvLyBDT1JSRUNURUQKCiAgICAgICAgLy8gLi4uIChJbnB1dHMgcmVtYWluIHRoZSBzYW1lKSAuLi4KICAgICAgICByZXF1aXJlcyBpbnB1dF90YXJnZXRfaXA6IFN0cmluZzsKICAgICAgICByZXF1aXJlcyBpbnB1dF9wYXlsb2FkOiBCeXRlU3RyZWFtOwogICAgICAgIHJlcXVpcmVzIG5ldHdvcmtfaGFyZHdhcmVfaW50ZXJydXB0X3BheWxvYWQ6IEJ5dGVTdHJlYW07CiAgICB9Ci8vIDIuIElURVJBVEU6IFRoZSBwcm9wb3NlZCBuZXR3b3JrIG9wZXJhdGlvbnMuCiAgICBJdGVyYXRlIHsKICAgICAgICBsZXQgcHJvcG9zZWRfcmVtb3RlX2lwOiBTdHJpbmcgPSBpbnB1dF90YXJnZXRfaXA7CiAgICAgICAgbGV0IHByb3Bvc2VkX2Nvbm5lY3Rpb25fc3RhdGU6IFN0cmluZyA9ICJFU1RBQkxJU0hFRCI7CiAgICAgICAgCiAgICAgICAgbGV0IHByb3Bvc2VkX3R4X2RhdGE6IEJ5dGVTdHJlYW0gPSBpbnB1dF9wYXlsb2FkOwogICAgICAgIGxldCBwcm9wb3NlZF9uZXdfdHhfYnVmZmVyOiBCeXRlU3RyZWFtID0gYXBwZW5kKHR4X2J1ZmZlciwgcHJvcG9zZWRfdHhfZGF0YSk7CgogICAgICAgIGxldCBwcm9wb3NlZF9yeF9kYXRhOiBCeXRlU3RyZWFtID0gbmV0d29ya19oYXJkd2FyZV9pbnRlcnJ1cHRfcGF5bG9hZDsKICAgICAgICBsZXQgcHJvcG9zZWRfbmV3X3J4X2J1ZmZlcjogQnl0ZVN0cmVhbSA9IGFwcGVuZChyeF9idWZmZXIsIHByb3Bvc2VkX3J4X2RhdGEpOwogICAgICAgIAogICAgICAgIC8vIC0tLSBUSEUgUVVBTlRVTSBTSElGVCAoVEhFIFNDUklCRSkgLS0tCiAgICAgICAgLy8gV2UgdHJhbnNsYXRlIHRoZSBodW1hbi9yYXcgcGF5bG9hZCBpbnRvIGEgY29udGludW91cyBCYXNlLTYwIENvbmNlcHQgVmVjdG9yCiAgICAgICAgbGV0IHR4X2NvbmNlcHRfdmVjdG9yOiBBcnJheTxGbG9hdD4gPSB0aGlua2lmeShwcm9wb3NlZF90eF9kYXRhKTsKICAgICAgICBsZXQgcnhfY29uY2VwdF92ZWN0b3I6IEFycmF5PEZsb2F0PiA9IHRoaW5raWZ5KHByb3Bvc2VkX3J4X2RhdGEpOwogICAgICAgIAogICAgICAgIC8vIFRoZSBPTVpUQSBEZWVwIFNjYW4gbm93IGV2YWx1YXRlcyB0aGUgTWF0aGVtYXRpY2FsIFZlY3RvcnMhCiAgICAgICAgbGV0IHBvbGljeV9zY2FuX3Jlc3VsdDogQm9vbCA9IChldmFsdWF0ZV9wb2xpY3koc2VjdXJpdHlfcG9saWN5X2lkLCB0eF9jb25jZXB0X3ZlY3RvcikgJiYgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBldmFsdWF0ZV9wb2xpY3koc2VjdXJpdHlfcG9saWN5X2lkLCByeF9jb25jZXB0X3ZlY3RvcikpOwogICAgfQoKICAgIC8vIDMuIENIRUNLOiBUaGUgT01aVEEgWmVyby1UcnVzdCBFbmZvcmNlbWVudCBHYXRlLgogICAgQ2hlY2sgewogICAgICAgIC8vIC4uLiAoUnVsZSAxIGFuZCBSdWxlIDIgcmVtYWluIHRoZSBzYW1lKSAuLi4KICAgICAgICBpZiAoKGFjdGlvbiA9PSAiU0VORCIpIHx8IChhY3Rpb24gPT0gIlJFQ0VJVkUiKSkgewogICAgICAgICAgICBhc3NlcnQoY29ubmVjdGlvbl9zdGF0ZSA9PSAiRVNUQUJMSVNIRUQiKQogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiTmV0d29yayBFcnJvcjogU29ja2V0IGlzIG5vdCBjb25uZWN0ZWQuIik7CiAgICAgICAgfQogICAgICAgIGlmIChhY3Rpb24gPT0gIlNFTkQiKSB7CiAgICAgICAgICAgICBhc3NlcnQocmVxdWVzdG9yX2lkID09IG93bmVyX2lkKQogICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIlNlY3VyaXR5IFZpb2xhdGlvbjogVW5hdXRob3JpemVkIFByb2Nlc3MuIik7CiAgICAgICAgfQoKICAgICAgICAvLyBSdWxlIDM6IFRoZSBPTVpUQSBWZWN0b3IgSW5zcGVjdGlvbiBHYXRlCiAgICAgICAgaWYgKChhY3Rpb24gPT0gIlNFTkQiKSB8fCAoYWN0aW9uID09ICJSRUNFSVZFIikpIHsKICAgICAgICAgICAgYXNzZXJ0KHBvbGljeV9zY2FuX3Jlc3VsdCA9PSB0cnVlKQogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiT01aVEEgVmlvbGF0aW9uOiBDb25jZXB0IFZlY3RvciBwaGFzZSBhbmdsZSBpbmRpY2F0ZXMgbWFsaWNpb3VzIGludGVudC4gQ29ubmVjdGlvbiBzZXZlcmVkLiIpOwogICAgICAgIH0KICAgICAgICAKICAgICAgICBpZiAoYWN0aW9uID09ICJDT05ORUNUIikgewogICAgICAgICAgICBhc3NlcnQodmVyaWZ5X3JlbW90ZV9pZGVudGl0eShwcm9wb3NlZF9yZW1vdGVfaXApICE9IG51bGwpCiAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJBdXRoZW50aWNhdGlvbiBFcnJvcjogUmVtb3RlIGhvc3QgZmFpbGVkIGlkZW50aXR5IHZlcmlmaWNhdGlvbi4iKTsKICAgICAgICB9CiAgICB9CiAgICBUcmFuc2Zvcm0gewogICAgICAgIGlmIChhY3Rpb24gPT0gIkNPTk5FQ1QiKSB7CiAgICAgICAgICAgIGVtaXQgeyAKICAgICAgICAgICAgICAgIHJlbW90ZV9pcDogcHJvcG9zZWRfcmVtb3RlX2lwLAogICAgICAgICAgICAgICAgY29ubmVjdGlvbl9zdGF0ZTogcHJvcG9zZWRfY29ubmVjdGlvbl9zdGF0ZSwKICAgICAgICAgICAgICAgIHJlbW90ZV9pZGVudGl0eV9oYXNoOiB2ZXJpZnlfcmVtb3RlX2lkZW50aXR5KHByb3Bvc2VkX3JlbW90ZV9pcCkKICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICAgICAgaWYgKGFjdGlvbiA9PSAiU0VORCIpIHsKICAgICAgICAgICAgZW1pdCB7IAogICAgICAgICAgICAgICAgdHhfYnVmZmVyOiBwcm9wb3NlZF9uZXdfdHhfYnVmZmVyLAogICAgICAgICAgICAgICAgX3RhcmdldF9oYXJkd2FyZV9pbnRlcnJ1cHQ6ICJOSUMiLCAKICAgICAgICAgICAgICAgIF9jb21tYW5kOiAiVFJBTlNNSVQiLCAKICAgICAgICAgICAgICAgIF9wYXlsb2FkOiBwcm9wb3NlZF90eF9kYXRhIAogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBpZiAoYWN0aW9uID09ICJSRUNFSVZFIikgewogICAgICAgICAgICBlbWl0IHsgCiAgICAgICAgICAgICAgICByeF9idWZmZXI6IHByb3Bvc2VkX25ld19yeF9idWZmZXIsCiAgICAgICAgICAgICAgICBfa2VybmVsX21lc3NhZ2U6IG93bmVyX2lkLCAKICAgICAgICAgICAgICAgIF9ldmVudDogIkRBVEFfUkVBRFkiIAogICAgICAgICAgICB9OwogICAgICAgIH0KICAgIH0KfQ=="
+}

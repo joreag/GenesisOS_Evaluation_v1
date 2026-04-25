@@ -1,0 +1,580 @@
+{
+    "Identity": {
+        "id": "mdo_identity",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "object_id": {
+                    "name": "object_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "owner_id": {
+                    "name": "owner_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "entity_name": {
+                    "name": "entity_name",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "entity_type": {
+                    "name": "entity_type",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "clearance_level": {
+                    "name": "clearance_level",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "public_key": {
+                    "name": "public_key",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "roles": {
+                    "name": "roles",
+                    "kind": "state",
+                    "type": "Array<String>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "auth_status": {
+                    "name": "auth_status",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"LOCKED\"",
+                        "dataType": "String"
+                    }
+                },
+                "last_auth_time": {
+                    "name": "last_auth_time",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "current_session_token": {
+                    "name": "current_session_token",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "max_session_duration": {
+                    "name": "max_session_duration",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 3600,
+                        "dataType": "Int"
+                    }
+                },
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_signed_challenge": {
+                    "name": "input_signed_challenge",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_challenge_nonce": {
+                    "name": "input_challenge_nonce",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_new_roles": {
+                    "name": "input_new_roles",
+                    "kind": "requires",
+                    "type": "Array<String>",
+                    "initial_value": null
+                }
+            },
+            "requires": [
+                "object_id",
+                "owner_id",
+                "entity_name",
+                "entity_type",
+                "public_key",
+                "action",
+                "requestor_id",
+                "input_signed_challenge",
+                "input_challenge_nonce",
+                "input_new_roles"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_auth_status",
+                "dataType": "String",
+                "expression": {
+                    "type": "Literal",
+                    "value": "\"AUTHENTICATED\"",
+                    "dataType": "String"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_session_token",
+                "dataType": "String",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "generate_secure_token",
+                    "arguments": []
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_auth_time",
+                "dataType": "Int",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "current_system_time",
+                    "arguments": []
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "signature_valid",
+                "dataType": "Bool",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "verify_signature",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "public_key"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_challenge_nonce"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_signed_challenge"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_roles",
+                "dataType": "Array<String>",
+                "expression": {
+                    "type": "Variable",
+                    "name": "input_new_roles"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_locked_status",
+                "dataType": "String",
+                "expression": {
+                    "type": "Literal",
+                    "value": "\"LOCKED\"",
+                    "dataType": "String"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_cleared_token",
+                "dataType": "String",
+                "expression": {
+                    "type": "Literal",
+                    "value": "\"\"",
+                    "dataType": "String"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "requestor_identity",
+                "dataType": "Identity",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "get_identity",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "requestor_id"
+                        }
+                    ]
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"AUTHENTICATE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "signature_valid"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Authentication Failed: Invalid cryptographic signature.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "FunctionCall",
+                                "function_name": "is_nonce_fresh",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "input_challenge_nonce"
+                                    }
+                                ]
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Authentication Failed: Stale or reused nonce detected.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"UPDATE_ROLES\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": ">",
+                            "left": {
+                                "type": "PropertyAccess",
+                                "object": "requestor_identity",
+                                "property": "clearance_level"
+                            },
+                            "right": {
+                                "type": "Variable",
+                                "name": "clearance_level"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Security Violation: Requestor lacks clearance to modify this identity.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": ">=",
+                            "left": {
+                                "type": "PropertyAccess",
+                                "object": "requestor_identity",
+                                "property": "clearance_level"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": 8,
+                                "dataType": "Int"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Security Violation: Only High-Admin level can assign roles.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"VERIFY_SESSION\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "auth_status"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": "\"AUTHENTICATED\"",
+                                "dataType": "String"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Session Error: Identity is currently locked.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "<",
+                            "left": {
+                                "type": "BinaryOp",
+                                "op": "-",
+                                "left": {
+                                    "type": "FunctionCall",
+                                    "function_name": "current_system_time",
+                                    "arguments": []
+                                },
+                                "right": {
+                                    "type": "Variable",
+                                    "name": "last_auth_time"
+                                }
+                            },
+                            "right": {
+                                "type": "Variable",
+                                "name": "max_session_duration"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Session Error: Token expired. Re-authentication required.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"AUTHENTICATE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "auth_status": {
+                                "type": "Variable",
+                                "name": "proposed_auth_status"
+                            },
+                            "current_session_token": {
+                                "type": "Variable",
+                                "name": "proposed_new_session_token"
+                            },
+                            "last_auth_time": {
+                                "type": "Variable",
+                                "name": "proposed_auth_time"
+                            }
+                        }
+                    },
+                    {
+                        "type": "EmitToRequestor",
+                        "payload": {
+                            "token": {
+                                "type": "Variable",
+                                "name": "proposed_new_session_token"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"UPDATE_ROLES\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "roles": {
+                                "type": "Variable",
+                                "name": "proposed_new_roles"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "||",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"REVOKE\"",
+                            "dataType": "String"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"LOGOUT\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "auth_status": {
+                                "type": "Variable",
+                                "name": "proposed_locked_status"
+                            },
+                            "current_session_token": {
+                                "type": "Variable",
+                                "name": "proposed_cleared_token"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

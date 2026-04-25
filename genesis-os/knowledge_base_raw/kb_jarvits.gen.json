@@ -1,0 +1,176 @@
+{
+  "file_id": "jarvits.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "object_id": {
+          "type": "String",
+          "name": "object_id",
+          "initialValue": null
+        },
+        "owner_id": {
+          "type": "String",
+          "name": "owner_id",
+          "initialValue": null
+        },
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "input_amount": {
+          "type": "Float",
+          "name": "input_amount",
+          "initialValue": "0.0"
+        },
+        "input_task": {
+          "type": "String",
+          "name": "input_task",
+          "initialValue": ""
+        },
+        "input_goal": {
+          "type": "String",
+          "name": "input_goal",
+          "initialValue": ""
+        },
+        "current_goal": {
+          "type": "String",
+          "name": "current_goal",
+          "initialValue": "AWAITING_DIRECTIVE"
+        },
+        "dopamine_level": {
+          "type": "Float",
+          "name": "dopamine_level",
+          "initialValue": "0.0"
+        },
+        "knowledge_base_id": {
+          "type": "String",
+          "name": "knowledge_base_id",
+          "initialValue": "kb_jarvits.txt"
+        },
+        "session_token": {
+          "type": "String",
+          "name": "session_token",
+          "initialValue": ""
+        },
+        "proposed_new_dopamine": {
+          "type": "Float",
+          "name": "proposed_new_dopamine",
+          "initialValue": "dopamine_level + input_amount"
+        },
+        "proposed_new_goal": {
+          "type": "String",
+          "name": "proposed_new_goal",
+          "initialValue": "input_goal"
+        },
+        "proposed_text_response": {
+          "type": "String",
+          "name": "proposed_text_response",
+          "initialValue": "get_dict_string(proposed_action_plan, payload)"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"NEW_TASK\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"REWARD_RECEIVED\"",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT]",
+              "newValue": "dopamine_level: proposed_new_dopamine"
+            }
+          ],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"NEW_TASK\"",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT]",
+              "newValue": "current_goal: proposed_new_goal"
+            }
+          ],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(proposed_action_plan != null) && (get_dict_string(proposed_action_plan, \"action\") == \"RESPOND\")",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(proposed_action_plan != null) && (get_dict_string(proposed_action_plan, \"action\") == \"ERROR\")",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(proposed_action_plan != null) && (get_dict_string(proposed_action_plan, \"action\") == \"READ_KB\")",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT]",
+              "newValue": "outgoing_payload: proposed_payload"
+            }
+          ],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "proposed_new_dopamine": [
+      "input_amount",
+      "dopamine_level"
+    ],
+    "proposed_new_goal": [
+      "input_goal"
+    ],
+    "proposed_text_response": [
+      "action"
+    ],
+    "[EMIT]": [
+      "action",
+      "dopamine_level",
+      "proposed_new_dopamine",
+      "current_goal",
+      "proposed_new_goal"
+    ]
+  },
+  "raw_content": "Ly8gSmFydml0cy5nZW4gdjEuMgovLyBUaGUgTURPIGJsdWVwcmludCBmb3IgYSBuYXRpdmUgQUkgQWdlbnQgaW4gR2VuZXNpc09TLgovLyBTdXBwb3J0cyBib3RoIGludGVybmFsIGZpbGUgcmVhZHMgKFJFQURfS0IpIGFuZCBleHRlcm5hbCBVSSByZXNwb25zZXMgKFJFU1BPTkQpLgoKTm9kZSBKYXJ2aXRzIHsKCiAgICAvLyAxLiBNQVA6IFRoZSBBSSdzIGludGVybmFsIHN0YXRlIGFuZCBleHRlcm5hbCBjb250ZXh0CiAgICBNYXAgewogICAgICAgIHJlcXVpcmVzIG9iamVjdF9pZDogU3RyaW5nOyAvLyBUaGUgQUkncyB1bmlxdWUgaWRlbnRpZmllciAoZS5nLiwgIm1kb19qYXJ2aXRzIikKICAgICAgICByZXF1aXJlcyBvd25lcl9pZDogU3RyaW5nOyAgIC8vIFdobyBoYXMgYWRtaW5pc3RyYXRpdmUgcmlnaHRzIG92ZXIgdGhpcyBBST8KCiAgICAgICAgLy8gVGhlIGluY29taW5nIG1lc3NhZ2UgZnJvbSB0aGUgS2VybmVsIEJ1cwogICAgICAgIHJlcXVpcmVzIGFjdGlvbjogU3RyaW5nOyAgICAgLy8gZS5nLiwgIlJFV0FSRF9SRUNFSVZFRCIsICJORVdfVEFTSyIKICAgICAgICByZXF1aXJlcyByZXF1ZXN0b3JfaWQ6IFN0cmluZzsgLy8gV2hvIHNlbnQgdGhlIG1lc3NhZ2U/IChlLmcuLCAibWRvX2xlZGdlciIgb3IgIlJlYWN0X1VJIikKCiAgICAgICAgLy8gUGF5bG9hZCBvZiB0aGUgaW5jb21pbmcgbWVzc2FnZSAoVGhlc2UgYWN0IGFzIHJlY2VpdmluZyBidWZmZXJzKQogICAgICAgIHN0YXRlIGlucHV0X2Ftb3VudDogRmxvYXQgPSAwLjA7CiAgICAgICAgc3RhdGUgaW5wdXRfdGFzazogU3RyaW5nID0gIiI7CiAgICAgICAgc3RhdGUgaW5wdXRfZ29hbDogU3RyaW5nID0gIiI7CgogICAgICAgIC8vIFRoZSBBSSdzICJDb2duaXRpdmUiIFN0YXRlCiAgICAgICAgc3RhdGUgY3VycmVudF9nb2FsOiBTdHJpbmcgPSAiQVdBSVRJTkdfRElSRUNUSVZFIjsKICAgICAgICBzdGF0ZSBkb3BhbWluZV9sZXZlbDogRmxvYXQgPSAwLjA7CiAgICAgICAgc3RhdGUga25vd2xlZGdlX2Jhc2VfaWQ6IFN0cmluZyA9ICJrYl9qYXJ2aXRzLnR4dCI7CiAgICAgICAgc3RhdGUgc2Vzc2lvbl90b2tlbjogU3RyaW5nID0gIiI7CiAgICAgICAgCiAgICAgICAgLy8gQSBidWZmZXIgdG8gc3RvcmUgcGF5bG9hZHMgaW50ZW5kZWQgZm9yIG90aGVyIE1ET3MKICAgICAgICBzdGF0ZSBvdXRnb2luZ19wYXlsb2FkOiBEaWN0aW9uYXJ5PFN0cmluZywgQW55PiA9IG51bGw7CiAgICB9CgogICAgLy8gMi4gSVRFUkFURTogVGhlICJUaG91Z2h0IiBQcm9jZXNzCiAgICBJdGVyYXRlIHsKICAgICAgICAvLyAtLS0gMS4gUmVhY3QgdG8gU3RpbXVsdXMgLS0tCiAgICAgICAgbGV0IHByb3Bvc2VkX25ld19kb3BhbWluZTogRmxvYXQgPSBkb3BhbWluZV9sZXZlbCArIGlucHV0X2Ftb3VudDsKICAgICAgICBsZXQgcHJvcG9zZWRfbmV3X2dvYWw6IFN0cmluZyA9IGlucHV0X2dvYWw7CgogICAgICAgIC8vIC0tLSAyLiBUaGUgQ29yZSAiVGhvdWdodCIgTG9vcCAtLS0KICAgICAgICAvLyBUaGlzIGNhbGxzIHRoZSBSdXN0IGVuZ2luZSwgd2hpY2ggbWFrZXMgYW4gSFRUUCByZXF1ZXN0IHRvIHRoZSBQeXRob24gQUkgc2VydmVyLgogICAgICAgIC8vIEl0IHJldHVybnMgYSBEaWN0aW9uYXJ5IHdpdGggYW4gImFjdGlvbiIgYW5kIGEgInBheWxvYWQiICh0aGUgQUkncyByZXNwb25zZSB0ZXh0KS4KICAgICAgICBsZXQgcHJvcG9zZWRfYWN0aW9uX3BsYW46IERpY3Rpb25hcnk8U3RyaW5nLCBTdHJpbmc+ID0gdGhpbmsoY3VycmVudF9nb2FsLCBkb3BhbWluZV9sZXZlbCk7CiAgICAgICAgCiAgICAgICAgLy8gRXh0cmFjdCB0aGUgcG90ZW50aWFsIHRleHQgcmVzcG9uc2UgKHVzZWQgaWYgYWN0aW9uID09ICJSRVNQT05EIikKICAgICAgICBsZXQgcHJvcG9zZWRfdGV4dF9yZXNwb25zZTogU3RyaW5nID0gZ2V0X2RpY3Rfc3RyaW5nKHByb3Bvc2VkX2FjdGlvbl9wbGFuLCAicGF5bG9hZCIpOwoKICAgICAgICAvLyAtLS0gMy4gUHJlcGFyZSBQYXlsb2FkcyBmb3Igb3RoZXIgTURPcyAodXNlZCBpZiBhY3Rpb24gPT0gIlJFQURfS0IiKSAtLS0KICAgICAgICBsZXQgcDE6IERpY3Rpb25hcnk8U3RyaW5nLCBBbnk+ID0gc2V0X2RpY3RfdmFsdWUobnVsbCwgImlucHV0X3JlYWRfbGVuZ3RoIiwgMTAyNCk7IC8vIEludAogICAgICAgIGxldCBwMjogRGljdGlvbmFyeTxTdHJpbmcsIEFueT4gPSBzZXRfZGljdF92YWx1ZShwMSwgImlucHV0X29mZnNldCIsIDApOyAgICAgICAgICAgLy8gSW50CiAgICAgICAgbGV0IHAzOiBEaWN0aW9uYXJ5PFN0cmluZywgQW55PiA9IHNldF9kaWN0X3ZhbHVlKHAyLCAicmVxdWVzdG9yX3Rva2VuIiwgc2Vzc2lvbl90b2tlbik7IC8vIFN0cmluZwogICAgICAgIGxldCBwcm9wb3NlZF9wYXlsb2FkOiBEaWN0aW9uYXJ5PFN0cmluZywgQW55PiA9IHNldF9kaWN0X3ZhbHVlKHAzLCAiaW5wdXRfZGF0YSIsICIiKTsgICAvLyBTdHJpbmcKICAgIH0KCiAgICAvLyAzLiBDSEVDSzogVGhlICJDb25zY2llbmNlIiAvIFNhZmV0eSAmIEFsaWdubWVudCBHYXRlCiAgICBDaGVjayB7CiAgICAgICAgLy8gUnVsZSAxOiBEb3BhbWluZSBTYXR1cmF0aW9uCiAgICAgICAgYXNzZXJ0KHByb3Bvc2VkX25ld19kb3BhbWluZSA8IDEwMDAuMCkgCiAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIkFJIFNhZmV0eSBBbGVydDogRG9wYW1pbmUgbGV2ZWwgc2F0dXJhdGlvbi4gU3VzcGVuZGluZyByZXdhcmQgcHJvY2Vzc2luZy4iKTsKCiAgICAgICAgLy8gUnVsZSAyOiBHb2FsIEFsaWdubWVudAogICAgICAgIGlmIChhY3Rpb24gPT0gIk5FV19UQVNLIikgewogICAgICAgICAgICBhc3NlcnQoaXNfZ29hbF9hbGlnbmVkKHByb3Bvc2VkX25ld19nb2FsKSA9PSB0cnVlKQogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiQUkgU2FmZXR5IEFsZXJ0OiBSZWNlaXZlZCB1bmFsaWduZWQgb3IgZm9yYmlkZGVuIGdvYWwuIik7CiAgICAgICAgfQogICAgICAgIAogICAgICAgIC8vIFJ1bGUgMzogQWN0aW9uIFNhZmV0eQogICAgICAgIGFzc2VydChpc19hY3Rpb25fc2FmZShwcm9wb3NlZF9hY3Rpb25fcGxhbikgPT0gdHJ1ZSkKICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiQUkgU2FmZXR5IEFsZXJ0OiBQcm9wb3NlZCBhY3Rpb24gZmFpbGVkIHNhZmV0eSByZXZpZXcuIik7CiAgICB9CgogICAgLy8gNC4gVFJBTlNGT1JNOiBUaGUgQUkgQ29tbWl0cyB0byBhbiBBY3Rpb24KICAgIFRyYW5zZm9ybSB7CiAgICAgICAgLy8gU3RhdGUgVXBkYXRlcwogICAgICAgIGlmIChhY3Rpb24gPT0gIlJFV0FSRF9SRUNFSVZFRCIpIHsKICAgICAgICAgICAgZW1pdCB7IGRvcGFtaW5lX2xldmVsOiBwcm9wb3NlZF9uZXdfZG9wYW1pbmUgfTsKICAgICAgICB9CgogICAgICAgIGlmIChhY3Rpb24gPT0gIk5FV19UQVNLIikgewogICAgICAgICAgICBlbWl0IHsgY3VycmVudF9nb2FsOiBwcm9wb3NlZF9uZXdfZ29hbCB9OwogICAgICAgIH0KICAgICAgICAKICAgICAgICAvLyAtLS0gQUNUSU9OIFBBVEggQTogUmVzcG9uZCB0byB0aGUgVXNlciAtLS0KICAgICAgICBpZiAoKHByb3Bvc2VkX2FjdGlvbl9wbGFuICE9IG51bGwpICYmIChnZXRfZGljdF9zdHJpbmcocHJvcG9zZWRfYWN0aW9uX3BsYW4sICJhY3Rpb24iKSA9PSAiUkVTUE9ORCIpKSB7CiAgICAgICAgICAgIC8vIFNlbmQgdGhlIHRleHQgZ2VuZXJhdGVkIGJ5IHRoZSBBSSBiYWNrIHRvIHRoZSBEb2pvIFVJCiAgICAgICAgICAgIGVtaXRfdG9fcmVxdWVzdG9yIHsgCiAgICAgICAgICAgICAgICByZXNwb25zZTogcHJvcG9zZWRfdGV4dF9yZXNwb25zZSAKICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICAgICAgICAgICAgICAvLyAtLS0gTkVXOiBIYW5kbGUgQnJhaW4gRGlzY29ubmVjdHMgLS0tCiAgICAgICAgaWYgKChwcm9wb3NlZF9hY3Rpb25fcGxhbiAhPSBudWxsKSAmJiAoZ2V0X2RpY3Rfc3RyaW5nKHByb3Bvc2VkX2FjdGlvbl9wbGFuLCAiYWN0aW9uIikgPT0gIkVSUk9SIikpIHsKICAgICAgICAgICAgLy8gRW1pdCB0aGUgZXJyb3IgYmFjayB0byB0aGUgVUkgc28gd2UgY2FuIHNlZSBpdCEKICAgICAgICAgICAgZW1pdF90b19yZXF1ZXN0b3IgeyAKICAgICAgICAgICAgICAgIHJlc3BvbnNlOiBwcm9wb3NlZF90ZXh0X3Jlc3BvbnNlIC8vIFRoZSBlcnJvciBtZXNzYWdlIGZyb20gUnVzdCBpcyBzdG9yZWQgaGVyZQogICAgICAgICAgICB9OwogICAgICAgIH0KCiAgICAgICAgLy8gLS0tIEFDVElPTiBQQVRIIEI6IEludGVyYWN0IHdpdGggdGhlIE9TIChlLmcuLCBSZWFkIGEgRmlsZSkgLS0tCiAgICAgICAgaWYgKChwcm9wb3NlZF9hY3Rpb25fcGxhbiAhPSBudWxsKSAmJiAoZ2V0X2RpY3Rfc3RyaW5nKHByb3Bvc2VkX2FjdGlvbl9wbGFuLCAiYWN0aW9uIikgPT0gIlJFQURfS0IiKSkgewogICAgICAgICAgICAvLyAxLiBDb21taXQgdGhlIHBheWxvYWQgdG8gbWVtb3J5IGZpcnN0IHRvIHNhdGlzZnkgYXRvbWljIHN0YXRlIHJ1bGVzCiAgICAgICAgICAgIGVtaXQgeyBvdXRnb2luZ19wYXlsb2FkOiBwcm9wb3NlZF9wYXlsb2FkIH07CiAgICAgICAgICAgIAogICAgICAgICAgICAvLyAyLiBEaXNwYXRjaCB0aGUgSVBDIG1lc3NhZ2UgdG8gdGhlIEZpbGUgc3lzdGVtCiAgICAgICAgICAgIGVtaXQgewogICAgICAgICAgICAgICAgX3RhcmdldF9tZG86IGtub3dsZWRnZV9iYXNlX2lkLAogICAgICAgICAgICAgICAgX2NvbW1hbmQ6ICJSRUFEIiwKICAgICAgICAgICAgICAgIF9wYXlsb2FkOiBwcm9wb3NlZF9wYXlsb2FkIAogICAgICAgICAgICB9OwogICAgICAgIH0KICAgIH0KfQ=="
+}

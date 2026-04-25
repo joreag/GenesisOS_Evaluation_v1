@@ -1,0 +1,343 @@
+body {
+  margin: 0;
+  background-color: #050505;
+  color: #00ffff;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+}
+
+.os-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #111;
+  border-bottom: 2px solid #00ffff;
+  font-weight: bold;
+}
+
+.metrics {
+  display: flex;
+  gap: 20px;
+}
+
+.desktop {
+  flex: 1;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.window-frame {
+  border: 1px solid #333;
+  background: #0a0a0a;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.window-frame h3 {
+  margin-top: 0;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+  color: #ff00ff;
+}
+
+.center-stage {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.workspace {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+}
+
+.desktop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 30px;
+    padding: 50px;
+}
+
+.app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.app-icon:hover {
+    transform: scale(1.1);
+}
+.app-icon .icon-img {
+    font-size: 3rem;
+    background: rgba(255, 255, 255, 0.1);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    border: 1px solid #333;
+    margin-bottom: 10px;
+}
+.app-icon.disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.window-frame {
+    height: 100%;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Mobile Shell Overrides */
+.shell-mobile {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #000;
+}
+
+.mobile-viewport {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.mobile-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column */
+    gap: 20px;
+}
+
+.mobile-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    active: scale(0.98);
+}
+
+.mobile-nav {
+    height: 60px;
+    background: #222;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #444;
+}
+
+.os-alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 0, 0, 0.8);
+    padding: 10px 20px;
+    border-radius: 50px;
+    z-index: 10000;
+}
+
+.os-root {
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a1a2e, #000);
+    overflow: hidden;
+    position: relative;
+}
+
+/* This is the Draggable "ghost" container. It only handles position. */
+.os-window-wrapper {
+    position: absolute;
+    /* Default size */
+    width: 800px;
+    height: 600px;
+}
+
+/* This is the visible, resizable window INSIDE the wrapper */
+.os-window {
+    width: 100%;
+    height: 100%;
+    
+    /* Native Resizing */
+    resize: both;
+    overflow: hidden; /* IMPORTANT */
+    min-width: 300px;
+    min-height: 200px;
+    
+    /* Visual Styles */
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+/* The maximized state applies to BOTH the wrapper and the inner window */
+.os-window-wrapper.maximized {
+    transform: none !important; 
+    top: 40px !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100% - 80px) !important;
+}
+
+.os-window-wrapper.maximized .os-window {
+    resize: none;
+    border-radius: 0;
+}
+
+.window-titlebar {
+    background: #2d2d2d;
+    padding: 10px;
+    cursor: move; /* Shows drag cursor */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.window-content {
+    flex-grow: 1;
+    overflow: auto;
+    position: relative;
+    padding: 0;
+}
+
+.os-taskbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 45px;
+    background: rgba(20, 20, 20, 0.9);
+    border-top: 1px solid #444;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 99999;
+}
+
+.task-list {
+    display: flex;
+    gap: 5px;
+    margin-left: 20px;
+}
+
+.task-item {
+    background: #333;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #ccc;
+}
+.task-item.active { background: #00796b; color: white; }
+
+.desktop-surface {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 100px);
+    gap: 20px;
+}
+
+.desktop-icon {
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    text-shadow: 0 2px 4px black;
+}
+.desktop-icon:hover { transform: scale(1.1); }
+
+.system-stats-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: #00ffff;
+    font-family: monospace;
+    pointer-events: none;
+}
+
+.mobile-app-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: #222;
+    border-bottom: 1px solid #444;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.back-btn {
+    background: #333;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 1rem;
+}
+.mobile-app-content {
+    padding-bottom: 80px; /* Space for bottom nav */
+}
+
+/* === GENESIS OS v3 WINDOW SYSTEM (CUSTOM HOOK) === */
+
+.os-window-final {
+    position: absolute; /* Our hook controls top/left */
+    display: flex;
+    flex-direction: column;
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    backdrop-filter: blur(15px);
+    
+    /* We don't use 'resize' anymore. The handle below controls it. */
+    overflow: hidden; 
+}
+
+.os-window-final.maximized {
+    border-radius: 0;
+    border: none;
+}
+
+/* No changes to titlebar or content styling needed, just make sure they exist */
+.window-titlebar { /* ... */ }
+.window-content { /* ... */ }
+
+/* This is our visible, clickable resize handle */
+.resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: se-resize; /* Southeast resize cursor */
+    /* Optional: Add a visual cue like a triangle */
+    background: linear-gradient(135deg, transparent 50%, #555 50%);
+}

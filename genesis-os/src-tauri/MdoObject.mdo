@@ -1,0 +1,388 @@
+{
+    "MdoObject": {
+        "id": "mdo_mdoobject",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "object_id": {
+                    "name": "object_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "owner_id": {
+                    "name": "owner_id",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "access_permissions": {
+                    "name": "access_permissions",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 700,
+                        "dataType": "Int"
+                    }
+                },
+                "integrity_hash": {
+                    "name": "integrity_hash",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "status": {
+                    "name": "status",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"ACTIVE\"",
+                        "dataType": "String"
+                    }
+                },
+                "input_new_owner_id": {
+                    "name": "input_new_owner_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_new_permissions": {
+                    "name": "input_new_permissions",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "input_data": {
+                    "name": "input_data",
+                    "kind": "requires",
+                    "type": "ByteStream",
+                    "initial_value": null
+                },
+                "input_offset": {
+                    "name": "input_offset",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "input_read_length": {
+                    "name": "input_read_length",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "current_calculated_hash": {
+                    "name": "current_calculated_hash",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_signed_challenge": {
+                    "name": "input_signed_challenge",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_challenge_nonce": {
+                    "name": "input_challenge_nonce",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                }
+            },
+            "requires": [
+                "object_id",
+                "created_at",
+                "input_new_owner_id",
+                "input_new_permissions",
+                "input_data",
+                "input_offset",
+                "input_read_length",
+                "action",
+                "requestor_id",
+                "current_calculated_hash",
+                "input_signed_challenge",
+                "input_challenge_nonce"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_owner",
+                "dataType": "String",
+                "expression": {
+                    "type": "Variable",
+                    "name": "input_new_owner_id"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_permissions",
+                "dataType": "Int",
+                "expression": {
+                    "type": "Variable",
+                    "name": "input_new_permissions"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_hash",
+                "dataType": "String",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "calculate_hash",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "self"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_status",
+                "dataType": "String",
+                "expression": {
+                    "type": "Literal",
+                    "value": "\"DELETED\"",
+                    "dataType": "String"
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "!=",
+                    "left": {
+                        "type": "Variable",
+                        "name": "object_id"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Fatal: Object lacks unique identifier.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "||",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "requestor_id"
+                        },
+                        "right": {
+                            "type": "Variable",
+                            "name": "owner_id"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "requestor_id"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"System_Root\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Security Violation: Unauthorized modification attempt.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "current_calculated_hash"
+                    },
+                    "right": {
+                        "type": "Variable",
+                        "name": "integrity_hash"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Integrity Error: Object state corrupted or altered externally.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "!=",
+                    "left": {
+                        "type": "Variable",
+                        "name": "status"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"DELETED\"",
+                        "dataType": "String"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Lifecycle Error: Object is tombstoned.\"",
+                        "dataType": "String"
+                    }
+                }
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"TRANSFER_OWNERSHIP\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "owner_id": {
+                                "type": "Variable",
+                                "name": "proposed_new_owner"
+                            },
+                            "integrity_hash": {
+                                "type": "Variable",
+                                "name": "proposed_new_hash"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"UPDATE_PERMISSIONS\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "access_permissions": {
+                                "type": "Variable",
+                                "name": "proposed_new_permissions"
+                            },
+                            "integrity_hash": {
+                                "type": "Variable",
+                                "name": "proposed_new_hash"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"DELETE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "status": {
+                                "type": "Variable",
+                                "name": "proposed_status"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,88 @@
+{
+  "file_id": "UARTDriver.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "requestor_token": {
+          "type": "String",
+          "name": "requestor_token",
+          "initialValue": null
+        },
+        "com1_base_port": {
+          "type": "Int",
+          "name": "com1_base_port",
+          "initialValue": "1016"
+        },
+        "lsr_offset": {
+          "type": "Int",
+          "name": "lsr_offset",
+          "initialValue": "5"
+        },
+        "ready_mask": {
+          "type": "Int",
+          "name": "ready_mask",
+          "initialValue": "32"
+        },
+        "input_char": {
+          "type": "String",
+          "name": "input_char",
+          "initialValue": null
+        },
+        "hardware_status_register": {
+          "type": "Int",
+          "name": "hardware_status_register",
+          "initialValue": null
+        },
+        "is_hardware_ready": {
+          "type": "Int",
+          "name": "is_hardware_ready",
+          "initialValue": "bitwise_and(hardware_status_register, ready_mask)"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"WRITE\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"WRITE\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "is_hardware_ready": [
+      "ready_mask",
+      "hardware_status_register"
+    ]
+  },
+  "raw_content": "Ly8gVWFydERyaXZlci5nZW4gdjEuMAovLyBCYXJlLU1ldGFsIFNlcmlhbCBQb3J0IERyaXZlcgoKTm9kZSBVYXJ0RHJpdmVyIHsKICAgIE1hcCB7CiAgICAgICAgcmVxdWlyZXMgYWN0aW9uOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgcmVxdWVzdG9yX2lkOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgcmVxdWVzdG9yX3Rva2VuOiBTdHJpbmc7IC8vIFpFUk8tVFJVU1QgSEFSRFdBUkUgQUNDRVNTCgogICAgICAgIC8vIFRoZSBIYXJkd2FyZSBGYWN0cyAoRXh0cmFjdGVkIGZyb20gQXJjaGFlb2xvZ2lzdCkKICAgICAgICBzdGF0ZSBjb20xX2Jhc2VfcG9ydDogSW50ID0gMTAxNjsgLy8gMHgzRjggaW4gRGVjaW1hbAogICAgICAgIHN0YXRlIGxzcl9vZmZzZXQ6IEludCA9IDU7CiAgICAgICAgc3RhdGUgcmVhZHlfbWFzazogSW50ID0gMzI7ICAgICAgIC8vIDB4MjAgaW4gRGVjaW1hbAoKICAgICAgICAvLyBUaGUgaW5wdXQgcGF5bG9hZCBmcm9tIHRoZSBPUwogICAgICAgIHJlcXVpcmVzIGlucHV0X2NoYXI6IFN0cmluZzsKICAgICAgICAKICAgICAgICAvLyAtLS0gSEFSRFdBUkUgVEVMRU1FVFJZIChJbmplY3RlZCBieSB0aGUgS2VybmVsKSAtLS0KICAgICAgICAvLyBJbiBCYXJlIE1ldGFsLCB0aGUgUnVzdCBlbmdpbmUgcmVhZHMgdGhlIHBoeXNpY2FsIGhhcmR3YXJlIHJlZ2lzdGVyIAogICAgICAgIC8vIGFuZCBpbmplY3RzIHRoZSB2YWx1ZSBoZXJlIGJlZm9yZSB0aGUgTURPIHJ1bnMuCiAgICAgICAgcmVxdWlyZXMgaGFyZHdhcmVfc3RhdHVzX3JlZ2lzdGVyOiBJbnQ7IAogICAgfQoKICAgIEl0ZXJhdGUgewogICAgICAgIC8vIEJpdHdpc2UgQU5EIG9wZXJhdGlvbiB0byBjaGVjayBpZiB0aGUgdHJhbnNtaXQgYnVmZmVyIGlzIGVtcHR5CiAgICAgICAgLy8gKEFzc3VtaW5nIHdlIGFkZCBiaXR3aXNlX2FuZCB0byBvdXIgUnVzdCBzeXNjYWxscykKICAgICAgICBsZXQgaXNfaGFyZHdhcmVfcmVhZHk6IEludCA9IGJpdHdpc2VfYW5kKGhhcmR3YXJlX3N0YXR1c19yZWdpc3RlciwgcmVhZHlfbWFzayk7CiAgICB9CgogICAgQ2hlY2sgewogICAgICAgIC8vIDEuIFplcm8tVHJ1c3QgSGFyZHdhcmUgR2F0ZQogICAgICAgIC8vIE9ubHkgdGhlIGFic29sdXRlIGNvcmUgT1MgY29tcG9uZW50cyBjYW4gdGFsayBkaXJlY3RseSB0byBzaWxpY29uLgogICAgICAgIGFzc2VydChpc19zZXNzaW9uX3ZhbGlkKHJlcXVlc3Rvcl90b2tlbikgPT0gdHJ1ZSkKICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiU2VjdXJpdHkgVmlvbGF0aW9uOiBJbnZhbGlkIHNlc3Npb24gdG9rZW4gZm9yIEhhcmR3YXJlIEFjY2Vzcy4iKTsKICAgICAgICAgICAgCiAgICAgICAgYXNzZXJ0KHJlcXVlc3Rvcl9pZCA9PSAiU3lzdGVtX0tlcm5lbF9Mb2dnZXIiKQogICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTZWN1cml0eSBWaW9sYXRpb246IE9ubHkgdGhlIEtlcm5lbCBMb2dnZXIgbWF5IGFjY2VzcyB0aGUgU2VyaWFsIFBvcnQgZGlyZWN0bHkuIik7CgogICAgICAgIC8vIDIuIFRoZSBIYXJkd2FyZSBTdGF0ZSBHYXRlIChSZXBsYWNlcyB0aGUgQyAnd2hpbGUnIGxvb3ApCiAgICAgICAgLy8gSWYgdGhlIGhhcmR3YXJlIGlzbid0IHJlYWR5LCB3ZSBtYXRoZW1hdGljYWxseSByZWplY3QgdGhlIHdyaXRlIGF0dGVtcHQgCiAgICAgICAgLy8gaW5zdGVhZCBvZiBmcmVlemluZyB0aGUgT1MgaW4gYW4gaW5maW5pdGUgbG9vcCEKICAgICAgICBpZiAoYWN0aW9uID09ICJXUklURSIpIHsKICAgICAgICAgICAgYXNzZXJ0KGlzX2hhcmR3YXJlX3JlYWR5ID4gMCkKICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIkhhcmR3YXJlIEZhdWx0OiBVQVJUIFRyYW5zbWl0IEJ1ZmZlciBpcyBmdWxsIG9yIHVucmVzcG9uc2l2ZS4gV3JpdGUgYWJvcnRlZC4iKTsKICAgICAgICB9CiAgICB9CgogICAgVHJhbnNmb3JtIHsKICAgICAgICBpZiAoYWN0aW9uID09ICJXUklURSIpIHsKICAgICAgICAgICAgLy8gV2UgZW1pdCBhIGRpcmVjdCBoYXJkd2FyZSBpbnRlcnJ1cHQgY29tbWFuZC4KICAgICAgICAgICAgLy8gVGhlIFJ1c3QgZW5naW5lIGludGVyY2VwdHMgdGhpcyBhbmQgdXNlcyB0aGUgJ291dGInIGFzc2VtYmx5IGluc3RydWN0aW9uLgogICAgICAgICAgICBlbWl0IHsKICAgICAgICAgICAgICAgIF90YXJnZXRfaGFyZHdhcmVfaW9fcG9ydDogY29tMV9iYXNlX3BvcnQsCiAgICAgICAgICAgICAgICBfY29tbWFuZDogIk9VVEIiLAogICAgICAgICAgICAgICAgX3BheWxvYWQ6IGlucHV0X2NoYXIKICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICB9Cn0="
+}

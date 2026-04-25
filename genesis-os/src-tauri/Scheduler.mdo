@@ -1,0 +1,566 @@
+{
+    "Scheduler": {
+        "id": "mdo_scheduler",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requested_process_memory": {
+                    "name": "requested_process_memory",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "command": {
+                    "name": "command",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "value": {
+                    "name": "value",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "address": {
+                    "name": "address",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "running_process": {
+                    "name": "running_process",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "ready_queue": {
+                    "name": "ready_queue",
+                    "kind": "state",
+                    "type": "Array<String>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "blocked_queue": {
+                    "name": "blocked_queue",
+                    "kind": "state",
+                    "type": "Array<String>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "total_cpu_load": {
+                    "name": "total_cpu_load",
+                    "kind": "state",
+                    "type": "Float",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0.0,
+                        "dataType": "Float"
+                    }
+                },
+                "available_memory": {
+                    "name": "available_memory",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "system_uptime": {
+                    "name": "system_uptime",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "current_tick": {
+                    "name": "current_tick",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "default_time_slice": {
+                    "name": "default_time_slice",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                }
+            },
+            "requires": [
+                "action",
+                "requestor_id",
+                "requested_process_memory",
+                "default_time_slice"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_tick",
+                "dataType": "Int",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "+",
+                    "left": {
+                        "type": "Variable",
+                        "name": "current_tick"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": 1,
+                        "dataType": "Int"
+                    }
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "next_process_candidate",
+                "dataType": "String",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "determine_next_process",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "ready_queue"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_cpu_load",
+                "dataType": "Float",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "calculate_system_load",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "ready_queue"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "blocked_queue"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "process_to_terminate",
+                "dataType": "String",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "identify_critical_dissonance",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "ready_queue"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "running_process"
+                        }
+                    ]
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"SCHEDULE_NEXT\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "FunctionCall",
+                                "function_name": "mdo_exists",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "next_process_candidate"
+                                    }
+                                ]
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Scheduler Error: Attempted to schedule a non-existent ProcessID.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"SPAWN_NEW_PROCESS\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "<",
+                            "left": {
+                                "type": "Variable",
+                                "name": "proposed_cpu_load"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": 0.95,
+                                "dataType": "Float"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"System Overload: Refusing to spawn new process. High CPU Load.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": ">",
+                            "left": {
+                                "type": "Variable",
+                                "name": "available_memory"
+                            },
+                            "right": {
+                                "type": "Variable",
+                                "name": "requested_process_memory"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"System Overload: OOM.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "!=",
+                    "left": {
+                        "type": "Variable",
+                        "name": "process_to_terminate"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "action"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": "\"TERMINATE_PROCESS\"",
+                                "dataType": "String"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Kernel Panic: Scheduler failed to terminate rogue process.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "Emit",
+                "payload": {
+                    "current_tick": {
+                        "type": "Variable",
+                        "name": "proposed_new_tick"
+                    },
+                    "total_cpu_load": {
+                        "type": "Variable",
+                        "name": "proposed_cpu_load"
+                    }
+                }
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"SCHEDULE_NEXT\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "ready_queue": {
+                                "type": "FunctionCall",
+                                "function_name": "remove",
+                                "arguments": [
+                                    {
+                                        "type": "FunctionCall",
+                                        "function_name": "append",
+                                        "arguments": [
+                                            {
+                                                "type": "Variable",
+                                                "name": "ready_queue"
+                                            },
+                                            {
+                                                "type": "Variable",
+                                                "name": "running_process"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "Variable",
+                                        "name": "next_process_candidate"
+                                    }
+                                ]
+                            },
+                            "running_process": {
+                                "type": "Variable",
+                                "name": "next_process_candidate"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_mdo": {
+                                "type": "Variable",
+                                "name": "next_process_candidate"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"SET_QUOTA\"",
+                                "dataType": "String"
+                            },
+                            "_value": {
+                                "type": "Variable",
+                                "name": "default_time_slice"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_hardware_interrupt": {
+                                "type": "Literal",
+                                "value": "\"CPU\"",
+                                "dataType": "String"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"JUMP\"",
+                                "dataType": "String"
+                            },
+                            "_address": {
+                                "type": "FunctionCall",
+                                "function_name": "get_instruction_pointer",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "next_process_candidate"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"TERMINATE_PROCESS\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "ready_queue": {
+                                "type": "FunctionCall",
+                                "function_name": "remove_all",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "ready_queue"
+                                    },
+                                    {
+                                        "type": "Variable",
+                                        "name": "process_to_terminate"
+                                    }
+                                ]
+                            },
+                            "blocked_queue": {
+                                "type": "FunctionCall",
+                                "function_name": "remove_all",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "blocked_queue"
+                                    },
+                                    {
+                                        "type": "Variable",
+                                        "name": "process_to_terminate"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_mdo": {
+                                "type": "Variable",
+                                "name": "process_to_terminate"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"FORCE_HALT\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_mdo": {
+                                "type": "Literal",
+                                "value": "\"System_Memory_Manager\"",
+                                "dataType": "String"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"FREE\"",
+                                "dataType": "String"
+                            },
+                            "_process_id": {
+                                "type": "Variable",
+                                "name": "process_to_terminate"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

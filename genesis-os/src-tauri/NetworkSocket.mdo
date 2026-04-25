@@ -1,0 +1,618 @@
+{
+    "NetworkSocket": {
+        "id": "mdo_networksocket",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "object_id": {
+                    "name": "object_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "owner_id": {
+                    "name": "owner_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "command": {
+                    "name": "command",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "protocol": {
+                    "name": "protocol",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "local_port": {
+                    "name": "local_port",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "connection_state": {
+                    "name": "connection_state",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"CLOSED\"",
+                        "dataType": "String"
+                    }
+                },
+                "remote_ip": {
+                    "name": "remote_ip",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "remote_identity_hash": {
+                    "name": "remote_identity_hash",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "security_policy_id": {
+                    "name": "security_policy_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "tx_buffer": {
+                    "name": "tx_buffer",
+                    "kind": "state",
+                    "type": "ByteStream",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "rx_buffer": {
+                    "name": "rx_buffer",
+                    "kind": "state",
+                    "type": "ByteStream",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "input_target_ip": {
+                    "name": "input_target_ip",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_payload": {
+                    "name": "input_payload",
+                    "kind": "requires",
+                    "type": "ByteStream",
+                    "initial_value": null
+                },
+                "network_hardware_interrupt_payload": {
+                    "name": "network_hardware_interrupt_payload",
+                    "kind": "requires",
+                    "type": "ByteStream",
+                    "initial_value": null
+                }
+            },
+            "requires": [
+                "object_id",
+                "owner_id",
+                "action",
+                "requestor_id",
+                "protocol",
+                "local_port",
+                "security_policy_id",
+                "input_target_ip",
+                "input_payload",
+                "network_hardware_interrupt_payload"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_remote_ip",
+                "dataType": "String",
+                "expression": {
+                    "type": "Variable",
+                    "name": "input_target_ip"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_connection_state",
+                "dataType": "String",
+                "expression": {
+                    "type": "Literal",
+                    "value": "\"ESTABLISHED\"",
+                    "dataType": "String"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_tx_data",
+                "dataType": "ByteStream",
+                "expression": {
+                    "type": "Variable",
+                    "name": "input_payload"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_tx_buffer",
+                "dataType": "ByteStream",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "append",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "tx_buffer"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "proposed_tx_data"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_rx_data",
+                "dataType": "ByteStream",
+                "expression": {
+                    "type": "Variable",
+                    "name": "network_hardware_interrupt_payload"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_rx_buffer",
+                "dataType": "ByteStream",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "append",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "rx_buffer"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "proposed_rx_data"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "tx_concept_vector",
+                "dataType": "Array<Float>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "thinkify",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "proposed_tx_data"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "rx_concept_vector",
+                "dataType": "Array<Float>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "thinkify",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "proposed_rx_data"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "policy_scan_result",
+                "dataType": "Bool",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "&&",
+                    "left": {
+                        "type": "FunctionCall",
+                        "function_name": "evaluate_policy",
+                        "arguments": [
+                            {
+                                "type": "Variable",
+                                "name": "security_policy_id"
+                            },
+                            {
+                                "type": "Variable",
+                                "name": "tx_concept_vector"
+                            }
+                        ]
+                    },
+                    "right": {
+                        "type": "FunctionCall",
+                        "function_name": "evaluate_policy",
+                        "arguments": [
+                            {
+                                "type": "Variable",
+                                "name": "security_policy_id"
+                            },
+                            {
+                                "type": "Variable",
+                                "name": "rx_concept_vector"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "||",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"SEND\"",
+                            "dataType": "String"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"RECEIVE\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "connection_state"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": "\"ESTABLISHED\"",
+                                "dataType": "String"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Network Error: Socket is not connected.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"SEND\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "requestor_id"
+                            },
+                            "right": {
+                                "type": "Variable",
+                                "name": "owner_id"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Security Violation: Unauthorized Process.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "||",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"SEND\"",
+                            "dataType": "String"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"RECEIVE\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "policy_scan_result"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"OMZTA Violation: Concept Vector phase angle indicates malicious intent. Connection severed.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"CONNECT\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "!=",
+                            "left": {
+                                "type": "FunctionCall",
+                                "function_name": "verify_remote_identity",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "proposed_remote_ip"
+                                    }
+                                ]
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": null,
+                                "dataType": "Null"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Authentication Error: Remote host failed identity verification.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"CONNECT\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "remote_ip": {
+                                "type": "Variable",
+                                "name": "proposed_remote_ip"
+                            },
+                            "connection_state": {
+                                "type": "Variable",
+                                "name": "proposed_connection_state"
+                            },
+                            "remote_identity_hash": {
+                                "type": "FunctionCall",
+                                "function_name": "verify_remote_identity",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "proposed_remote_ip"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"SEND\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "tx_buffer": {
+                                "type": "Variable",
+                                "name": "proposed_new_tx_buffer"
+                            },
+                            "_target_hardware_interrupt": {
+                                "type": "Literal",
+                                "value": "\"NIC\"",
+                                "dataType": "String"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"TRANSMIT\"",
+                                "dataType": "String"
+                            },
+                            "_payload": {
+                                "type": "Variable",
+                                "name": "proposed_tx_data"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"RECEIVE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "rx_buffer": {
+                                "type": "Variable",
+                                "name": "proposed_new_rx_buffer"
+                            },
+                            "_kernel_message": {
+                                "type": "Variable",
+                                "name": "owner_id"
+                            },
+                            "_event": {
+                                "type": "Literal",
+                                "value": "\"DATA_READY\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

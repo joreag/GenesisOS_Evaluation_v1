@@ -1,0 +1,233 @@
+{
+    "Terminal": {
+        "id": "mdo_terminal",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "object_id": {
+                    "name": "object_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "owner_id": {
+                    "name": "owner_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_token": {
+                    "name": "requestor_token",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_command": {
+                    "name": "input_command",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "security_policy_id": {
+                    "name": "security_policy_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"policy_safe_commands\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            "requires": [
+                "object_id",
+                "owner_id",
+                "action",
+                "requestor_id",
+                "requestor_token",
+                "input_command",
+                "security_policy_id"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "is_command_safe",
+                "dataType": "Bool",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "evaluate_policy",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "security_policy_id"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_command"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_execution_target",
+                "dataType": "String",
+                "expression": {
+                    "type": "Variable",
+                    "name": "input_command"
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "FunctionCall",
+                        "function_name": "is_session_valid",
+                        "arguments": [
+                            {
+                                "type": "Variable",
+                                "name": "requestor_token"
+                            }
+                        ]
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": true,
+                        "dataType": "Bool"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Security Violation: Invalid session token for Terminal access.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "||",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "requestor_id"
+                        },
+                        "right": {
+                            "type": "Variable",
+                            "name": "owner_id"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "requestor_id"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"System_Root\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Security Violation: Unauthorized access to Terminal.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "is_command_safe"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": true,
+                        "dataType": "Bool"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"OMZTA Violation: Command rejected by Security Policy. Malicious activity suspected.\"",
+                        "dataType": "String"
+                    }
+                }
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"EXECUTE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_hardware_interrupt": {
+                                "type": "Literal",
+                                "value": "\"HOST_OS\"",
+                                "dataType": "String"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"RUN_BASH\"",
+                                "dataType": "String"
+                            },
+                            "_payload": {
+                                "type": "Variable",
+                                "name": "proposed_execution_target"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

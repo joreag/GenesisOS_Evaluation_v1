@@ -1,0 +1,237 @@
+{
+    "UartDriver": {
+        "id": "mdo_uartdriver",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_token": {
+                    "name": "requestor_token",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "com1_base_port": {
+                    "name": "com1_base_port",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 1016,
+                        "dataType": "Int"
+                    }
+                },
+                "lsr_offset": {
+                    "name": "lsr_offset",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 5,
+                        "dataType": "Int"
+                    }
+                },
+                "ready_mask": {
+                    "name": "ready_mask",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 32,
+                        "dataType": "Int"
+                    }
+                },
+                "input_char": {
+                    "name": "input_char",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "hardware_status_register": {
+                    "name": "hardware_status_register",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                }
+            },
+            "requires": [
+                "action",
+                "requestor_id",
+                "requestor_token",
+                "input_char",
+                "hardware_status_register"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "is_hardware_ready",
+                "dataType": "Int",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "bitwise_and",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "hardware_status_register"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "ready_mask"
+                        }
+                    ]
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "FunctionCall",
+                        "function_name": "is_session_valid",
+                        "arguments": [
+                            {
+                                "type": "Variable",
+                                "name": "requestor_token"
+                            }
+                        ]
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": true,
+                        "dataType": "Bool"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Security Violation: Invalid session token for Hardware Access.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "requestor_id"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"System_Kernel_Logger\"",
+                        "dataType": "String"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"Security Violation: Only the Kernel Logger may access the Serial Port directly.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"WRITE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": ">",
+                            "left": {
+                                "type": "Variable",
+                                "name": "is_hardware_ready"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": 0,
+                                "dataType": "Int"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Hardware Fault: UART Transmit Buffer is full or unresponsive. Write aborted.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"WRITE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_hardware_io_port": {
+                                "type": "Variable",
+                                "name": "com1_base_port"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"OUTB\"",
+                                "dataType": "String"
+                            },
+                            "_payload": {
+                                "type": "Variable",
+                                "name": "input_char"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

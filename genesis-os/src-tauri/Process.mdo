@@ -1,0 +1,460 @@
+{
+    "Process": {
+        "id": "mdo_process",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "instruction_set": {
+                    "name": "instruction_set",
+                    "kind": "requires",
+                    "type": "Array<String>",
+                    "initial_value": null
+                },
+                "execution_state": {
+                    "name": "execution_state",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"READY\"",
+                        "dataType": "String"
+                    }
+                },
+                "instruction_cursor": {
+                    "name": "instruction_cursor",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "memory_capabilities": {
+                    "name": "memory_capabilities",
+                    "kind": "state",
+                    "type": "Array<String>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "resource_quota_cycles": {
+                    "name": "resource_quota_cycles",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "local_context": {
+                    "name": "local_context",
+                    "kind": "state",
+                    "type": "Dictionary<String,String>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "value": {
+                    "name": "value",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                }
+            },
+            "requires": [
+                "instruction_set",
+                "action",
+                "requestor_id"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "new_quota",
+                "dataType": "Int",
+                "expression": {
+                    "type": "Variable",
+                    "name": "value"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "state_running",
+                "dataType": "String",
+                "expression": {
+                    "type": "Literal",
+                    "value": "\"RUNNING\"",
+                    "dataType": "String"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "current_instruction",
+                "dataType": "String",
+                "expression": {
+                    "type": "ArrayAccess",
+                    "array": "instruction_set",
+                    "index": {
+                        "type": "Variable",
+                        "name": "instruction_cursor"
+                    }
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_next_cursor",
+                "dataType": "Int",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "+",
+                    "left": {
+                        "type": "Variable",
+                        "name": "instruction_cursor"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": 1,
+                        "dataType": "Int"
+                    }
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_remaining_cycles",
+                "dataType": "Int",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "-",
+                    "left": {
+                        "type": "Variable",
+                        "name": "resource_quota_cycles"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": 1,
+                        "dataType": "Int"
+                    }
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"SET_QUOTA\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "requestor_id"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": "\"mdo_scheduler\"",
+                                "dataType": "String"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Security Violation: Only the Scheduler can set CPU quotas.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "||",
+                            "left": {
+                                "type": "BinaryOp",
+                                "op": "==",
+                                "left": {
+                                    "type": "Variable",
+                                    "name": "execution_state"
+                                },
+                                "right": {
+                                    "type": "Literal",
+                                    "value": "\"READY\"",
+                                    "dataType": "String"
+                                }
+                            },
+                            "right": {
+                                "type": "BinaryOp",
+                                "op": "==",
+                                "left": {
+                                    "type": "Variable",
+                                    "name": "execution_state"
+                                },
+                                "right": {
+                                    "type": "Literal",
+                                    "value": "\"RUNNING\"",
+                                    "dataType": "String"
+                                }
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Lifecycle Error: Cannot wake a HALTED process.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"TICK\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "execution_state"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": "\"RUNNING\"",
+                                "dataType": "String"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Execution Error: Process is not in a runnable state.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "<=",
+                            "left": {
+                                "type": "Variable",
+                                "name": "proposed_next_cursor"
+                            },
+                            "right": {
+                                "type": "FunctionCall",
+                                "function_name": "length",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "instruction_set"
+                                    }
+                                ]
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Execution Error: Instruction pointer out of bounds.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": ">=",
+                            "left": {
+                                "type": "Variable",
+                                "name": "proposed_remaining_cycles"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": 0,
+                                "dataType": "Int"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Resource Exhaustion: Cycle quota exceeded.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"SET_QUOTA\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "resource_quota_cycles": {
+                                "type": "Variable",
+                                "name": "new_quota"
+                            },
+                            "execution_state": {
+                                "type": "Variable",
+                                "name": "state_running"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"TICK\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "instruction_cursor": {
+                                "type": "Variable",
+                                "name": "proposed_next_cursor"
+                            },
+                            "resource_quota_cycles": {
+                                "type": "Variable",
+                                "name": "proposed_remaining_cycles"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "&&",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"TICK\"",
+                            "dataType": "String"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "proposed_next_cursor"
+                        },
+                        "right": {
+                            "type": "FunctionCall",
+                            "function_name": "length",
+                            "arguments": [
+                                {
+                                    "type": "Variable",
+                                    "name": "instruction_set"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "execution_state": {
+                                "type": "Literal",
+                                "value": "\"HALTED\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

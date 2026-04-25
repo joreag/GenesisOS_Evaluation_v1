@@ -1,0 +1,207 @@
+{
+  "file_id": "File.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "object_id": {
+          "type": "String",
+          "name": "object_id",
+          "initialValue": null
+        },
+        "owner_id": {
+          "type": "String",
+          "name": "owner_id",
+          "initialValue": null
+        },
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "current_calculated_hash": {
+          "type": "String",
+          "name": "current_calculated_hash",
+          "initialValue": null
+        },
+        "requestor_token": {
+          "type": "String",
+          "name": "requestor_token",
+          "initialValue": null
+        },
+        "content": {
+          "type": "ByteStream",
+          "name": "content",
+          "initialValue": "null"
+        },
+        "size": {
+          "type": "Int",
+          "name": "size",
+          "initialValue": "0"
+        },
+        "mime_type": {
+          "type": "String",
+          "name": "mime_type",
+          "initialValue": null
+        },
+        "read_cursor": {
+          "type": "Int",
+          "name": "read_cursor",
+          "initialValue": "0"
+        },
+        "write_cursor": {
+          "type": "Int",
+          "name": "write_cursor",
+          "initialValue": "0"
+        },
+        "input_data": {
+          "type": "ByteStream",
+          "name": "input_data",
+          "initialValue": null
+        },
+        "input_offset": {
+          "type": "Int",
+          "name": "input_offset",
+          "initialValue": null
+        },
+        "input_read_length": {
+          "type": "Int",
+          "name": "input_read_length",
+          "initialValue": null
+        },
+        "system_max_file_size": {
+          "type": "Int",
+          "name": "system_max_file_size",
+          "initialValue": null
+        },
+        "proposed_appended_content": {
+          "type": "ByteStream",
+          "name": "proposed_appended_content",
+          "initialValue": "append(content, input_data)"
+        },
+        "proposed_new_size": {
+          "type": "Int",
+          "name": "proposed_new_size",
+          "initialValue": "size + length(input_data)"
+        },
+        "proposed_overwritten_content": {
+          "type": "ByteStream",
+          "name": "proposed_overwritten_content",
+          "initialValue": "splice(content, input_offset, input_data)"
+        },
+        "proposed_read_chunk": {
+          "type": "ByteStream",
+          "name": "proposed_read_chunk",
+          "initialValue": "slice(content, input_offset, input_read_length)"
+        },
+        "proposed_new_read_cursor": {
+          "type": "Int",
+          "name": "proposed_new_read_cursor",
+          "initialValue": "min((input_offset + input_read_length), size)"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(action == \"WRITE\") || (action == \"APPEND\")",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(action == \"APPEND\") && (mime_type == \"executable/genlang\")",
+          "actions": [],
+          "controlVars": [
+            "action",
+            "mime_type"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"APPEND\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"OVERWRITE\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"READ\"",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT_TO_REQUESTOR]",
+              "newValue": "data: proposed_read_chunk"
+            },
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT]",
+              "newValue": "read_cursor: proposed_new_read_cursor"
+            }
+          ],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "proposed_appended_content": [
+      "content",
+      "input_data"
+    ],
+    "proposed_new_size": [
+      "size",
+      "input_data"
+    ],
+    "proposed_overwritten_content": [
+      "content",
+      "input_data",
+      "input_offset"
+    ],
+    "proposed_read_chunk": [
+      "content",
+      "input_offset",
+      "input_read_length"
+    ],
+    "proposed_new_read_cursor": [
+      "size",
+      "input_offset",
+      "input_read_length"
+    ],
+    "[EMIT_TO_REQUESTOR]": [
+      "action",
+      "proposed_read_chunk"
+    ],
+    "[EMIT]": [
+      "action",
+      "read_cursor",
+      "proposed_new_read_cursor"
+    ]
+  },
+  "raw_content": "Ly8gRmlsZS5nZW4gdjAuMi4xCi8vIFRoZSBNRE8gcmVwcmVzZW50aW5nIGEgZGF0YSBjb250YWluZXIgaW4gR2VuZXNpc09TLgovLyBJbmhlcml0cyBmcm9tIE1kb09iamVjdCAoUmVxdWlyZXMgSUQsIE93bmVyLCBJbnRlZ3JpdHkgSGFzaCwgU3RhdHVzKS4KCk5vZGUgRmlsZSB7CgogICAgLy8gMS4gTUFQOiBUaGUgc3BlY2lmaWMgc3RhdGUgYW5kIGNvbnRleHQgb2YgYSBGaWxlLgogICAgTWFwIHsKICAgICAgICAvLyAuLi4gKEluaGVyaXRlZCBwcm9wZXJ0aWVzIHJlbWFpbiB0aGUgc2FtZSkgLi4uCiAgICAgICAgcmVxdWlyZXMgb2JqZWN0X2lkOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgb3duZXJfaWQ6IFN0cmluZzsKICAgICAgICByZXF1aXJlcyBhY3Rpb246IFN0cmluZzsKICAgICAgICByZXF1aXJlcyByZXF1ZXN0b3JfaWQ6IFN0cmluZzsKICAgICAgICByZXF1aXJlcyBjdXJyZW50X2NhbGN1bGF0ZWRfaGFzaDogU3RyaW5nOwogICAgICAgIHJlcXVpcmVzIHJlcXVlc3Rvcl90b2tlbjogU3RyaW5nOwoKICAgICAgICAvLyAtLS0gRmlsZS1TcGVjaWZpYyBQcm9wZXJ0aWVzIC0tLQogICAgICAgIHN0YXRlIGNvbnRlbnQ6IEJ5dGVTdHJlYW0gPSBudWxsOyAvLyBDT1JSRUNURUQ6IFVzZSBudWxsIGZvciBlbXB0eSBpbml0aWFsaXphdGlvbgogICAgICAgIHN0YXRlIHNpemU6IEludCA9IDA7CiAgICAgICAgcmVxdWlyZXMgbWltZV90eXBlOiBTdHJpbmc7CiAgICAgICAgc3RhdGUgcmVhZF9jdXJzb3I6IEludCA9IDA7CiAgICAgICAgc3RhdGUgd3JpdGVfY3Vyc29yOiBJbnQgPSAwOwogICAgICAgIAogICAgICAgIC8vIC4uLiAoSW5wdXRzIHJlbWFpbiB0aGUgc2FtZSkgLi4uCiAgICAgICAgcmVxdWlyZXMgaW5wdXRfZGF0YTogQnl0ZVN0cmVhbTsKICAgICAgICByZXF1aXJlcyBpbnB1dF9vZmZzZXQ6IEludDsKICAgICAgICByZXF1aXJlcyBpbnB1dF9yZWFkX2xlbmd0aDogSW50OwogICAgICAgIHJlcXVpcmVzIHN5c3RlbV9tYXhfZmlsZV9zaXplOiBJbnQ7CiAgICB9CiAgICAvLyAuLi4gKEl0ZXJhdGUsIENoZWNrLCBUcmFuc2Zvcm0gYmxvY2tzIHJlbWFpbiB0aGUgc2FtZSkgLi4uCiAgICBJdGVyYXRlIHsKICAgICAgICBsZXQgcHJvcG9zZWRfYXBwZW5kZWRfY29udGVudDogQnl0ZVN0cmVhbSA9IGFwcGVuZChjb250ZW50LCBpbnB1dF9kYXRhKTsKICAgICAgICBsZXQgcHJvcG9zZWRfbmV3X3NpemU6IEludCA9IHNpemUgKyBsZW5ndGgoaW5wdXRfZGF0YSk7CiAgICAgICAgbGV0IHByb3Bvc2VkX292ZXJ3cml0dGVuX2NvbnRlbnQ6IEJ5dGVTdHJlYW0gPSBzcGxpY2UoY29udGVudCwgaW5wdXRfb2Zmc2V0LCBpbnB1dF9kYXRhKTsKICAgICAgICBsZXQgcHJvcG9zZWRfcmVhZF9jaHVuazogQnl0ZVN0cmVhbSA9IHNsaWNlKGNvbnRlbnQsIGlucHV0X29mZnNldCwgaW5wdXRfcmVhZF9sZW5ndGgpOwogICAgICAgIGxldCBwcm9wb3NlZF9uZXdfcmVhZF9jdXJzb3I6IEludCA9IG1pbigoaW5wdXRfb2Zmc2V0ICsgaW5wdXRfcmVhZF9sZW5ndGgpLCBzaXplKTsKICAgIH0KICAgIENoZWNrIHsKCgogICAgICAgIGlmICgoYWN0aW9uID09ICJXUklURSIpIHx8IChhY3Rpb24gPT0gIkFQUEVORCIpKSB7CiAgICAgICAgICAgIGFzc2VydChwcm9wb3NlZF9uZXdfc2l6ZSA8PSBzeXN0ZW1fbWF4X2ZpbGVfc2l6ZSkgCiAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJSZXNvdXJjZSBFeGhhdXN0aW9uOiBNYXggZmlsZSBzaXplIGV4Y2VlZGVkLiIpOwogICAgICAgICAgICBhc3NlcnQoaW5wdXRfb2Zmc2V0IDw9IHNpemUpIAogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiTWVtb3J5IFZpb2xhdGlvbjogV3JpdGUgb2Zmc2V0IG91dCBvZiBib3VuZHMgKFNwYXJzZSBmaWxlcyBkaXNhbGxvd2VkKS4iKTsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAvLyAtLS0gTkVXOiBUSEUgWkVSTy1UUlVTVCBHQVRFIC0tLQogICAgICAgICAgICBhc3NlcnQoaXNfc2Vzc2lvbl92YWxpZChyZXF1ZXN0b3JfdG9rZW4pID09IHRydWUpCiAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTZWN1cml0eSBWaW9sYXRpb246IEludmFsaWQgb3IgbWlzc2luZyBzZXNzaW9uIHRva2VuLiIpOwogICAgICAgICAgICB9CgogICAgICAgIGlmICgoYWN0aW9uID09ICJBUFBFTkQiKSAmJiAobWltZV90eXBlID09ICJleGVjdXRhYmxlL2dlbmxhbmciKSkgewogICAgICAgICAgICAgYXNzZXJ0KHJlcXVlc3Rvcl9pZCA9PSAiU3lzdGVtX0NvbXBpbGVyIikKICAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTZWN1cml0eSBWaW9sYXRpb246IE9ubHkgdGhlIENvbXBpbGVyIG1heSBtb2RpZnkgZXhlY3V0YWJsZSBvYmplY3RzLiIpOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgLy8gLS0tIE5FVzogVEhFIFpFUk8tVFJVU1QgR0FURSAtLS0KICAgICAgICAgICAgYXNzZXJ0KGlzX3Nlc3Npb25fdmFsaWQocmVxdWVzdG9yX3Rva2VuKSA9PSB0cnVlKQogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiU2VjdXJpdHkgVmlvbGF0aW9uOiBJbnZhbGlkIG9yIG1pc3Npbmcgc2Vzc2lvbiB0b2tlbi4iKTsKICAgICAgICB9CiAgICB9CiAgICBUcmFuc2Zvcm0gewogICAgICAgIGlmIChhY3Rpb24gPT0gIkFQUEVORCIpIHsKICAgICAgICAgICAgZW1pdCB7IAogICAgICAgICAgICAgICAgY29udGVudDogcHJvcG9zZWRfYXBwZW5kZWRfY29udGVudCwKICAgICAgICAgICAgICAgIHNpemU6IHByb3Bvc2VkX25ld19zaXplLAogICAgICAgICAgICAgICAgd3JpdGVfY3Vyc29yOiBwcm9wb3NlZF9uZXdfc2l6ZSAKICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICAgICAgaWYgKGFjdGlvbiA9PSAiT1ZFUldSSVRFIikgewogICAgICAgICAgICBlbWl0IHsgCiAgICAgICAgICAgICAgICBjb250ZW50OiBwcm9wb3NlZF9vdmVyd3JpdHRlbl9jb250ZW50IAogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBpZiAoYWN0aW9uID09ICJSRUFEIikgewogICAgICAgICAgICBlbWl0X3RvX3JlcXVlc3RvciB7IGRhdGE6IHByb3Bvc2VkX3JlYWRfY2h1bmsgfTsKICAgICAgICAgICAgZW1pdCB7IHJlYWRfY3Vyc29yOiBwcm9wb3NlZF9uZXdfcmVhZF9jdXJzb3IgfTsKICAgICAgICB9CiAgICB9Cn0="
+}

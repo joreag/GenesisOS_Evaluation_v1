@@ -1,0 +1,155 @@
+{
+  "file_id": "Process.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "instruction_set": {
+          "type": "Array<String>",
+          "name": "instruction_set",
+          "initialValue": null
+        },
+        "execution_state": {
+          "type": "String",
+          "name": "execution_state",
+          "initialValue": "READY"
+        },
+        "instruction_cursor": {
+          "type": "Int",
+          "name": "instruction_cursor",
+          "initialValue": "0"
+        },
+        "memory_capabilities": {
+          "type": "Array<String>",
+          "name": "memory_capabilities",
+          "initialValue": "null"
+        },
+        "resource_quota_cycles": {
+          "type": "Int",
+          "name": "resource_quota_cycles",
+          "initialValue": "0"
+        },
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "value": {
+          "type": "Int",
+          "name": "value",
+          "initialValue": "0"
+        },
+        "new_quota": {
+          "type": "Int",
+          "name": "new_quota",
+          "initialValue": "value"
+        },
+        "state_running": {
+          "type": "String",
+          "name": "state_running",
+          "initialValue": "RUNNING"
+        },
+        "current_instruction": {
+          "type": "String",
+          "name": "current_instruction",
+          "initialValue": "instruction_set[instruction_cursor]"
+        },
+        "proposed_next_cursor": {
+          "type": "Int",
+          "name": "proposed_next_cursor",
+          "initialValue": "instruction_cursor + 1"
+        },
+        "proposed_remaining_cycles": {
+          "type": "Int",
+          "name": "proposed_remaining_cycles",
+          "initialValue": "resource_quota_cycles - 1"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"SET_QUOTA\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"TICK\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"SET_QUOTA\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"TICK\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(action == \"TICK\") && (proposed_next_cursor == length(instruction_set))",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT]",
+              "newValue": "execution_state: \"HALTED\""
+            }
+          ],
+          "controlVars": [
+            "instruction_set",
+            "action",
+            "proposed_next_cursor"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "new_quota": [
+      "value"
+    ],
+    "current_instruction": [
+      "instruction_set",
+      "instruction_cursor"
+    ],
+    "proposed_next_cursor": [
+      "instruction_cursor"
+    ],
+    "proposed_remaining_cycles": [
+      "resource_quota_cycles"
+    ],
+    "[EMIT]": [
+      "instruction_set",
+      "action",
+      "proposed_next_cursor",
+      "execution_state"
+    ]
+  },
+  "raw_content": "Ly8gUHJvY2Vzcy5nZW4gdjAuMwovLyBUaGUgTURPIHJlcHJlc2VudGluZyBhbiBhY3RpdmUsIGV4ZWN1dGluZyB1bml0IG9mIGxvZ2ljLgoKTm9kZSBQcm9jZXNzIHsKCiAgICAvLyAxLiBNQVA6IFRoZSBjb21wbGV0ZSBjb250ZXh0IHJlcXVpcmVkIGZvciBleGVjdXRpb24uCiAgICBNYXAgewogICAgICAgIHJlcXVpcmVzIGluc3RydWN0aW9uX3NldDogQXJyYXk8U3RyaW5nPjsKICAgICAgICBzdGF0ZSBleGVjdXRpb25fc3RhdGU6IFN0cmluZyA9ICJSRUFEWSI7CiAgICAgICAgc3RhdGUgaW5zdHJ1Y3Rpb25fY3Vyc29yOiBJbnQgPSAwOwogICAgICAgIHN0YXRlIG1lbW9yeV9jYXBhYmlsaXRpZXM6IEFycmF5PFN0cmluZz4gPSBudWxsOyAKICAgICAgICBzdGF0ZSByZXNvdXJjZV9xdW90YV9jeWNsZXM6IEludCA9IDA7CiAgICAgICAgc3RhdGUgbG9jYWxfY29udGV4dDogRGljdGlvbmFyeTxTdHJpbmcsIFN0cmluZz4gPSBudWxsOwoKICAgICAgICAvLyBDb250ZXh0IGZyb20gdGhlIGluY29taW5nIG1lc3NhZ2UKICAgICAgICByZXF1aXJlcyBhY3Rpb246IFN0cmluZzsKICAgICAgICByZXF1aXJlcyByZXF1ZXN0b3JfaWQ6IFN0cmluZzsKICAgICAgICAKICAgICAgICAvLyBQYXlsb2FkIGZyb20gdGhlIFNjaGVkdWxlcgogICAgICAgIHN0YXRlIHZhbHVlOiBJbnQgPSAwOyAKICAgIH0KCiAgICAvLyAyLiBJVEVSQVRFOiBQcm9wb3NlIGNoYW5nZXMgYmFzZWQgb24gdGhlIEFjdGlvbgogICAgSXRlcmF0ZSB7CiAgICAgICAgLy8gLS0tIExvZ2ljIGZvciBTQ0hFRFVMRSAvIFdBS0UgVVAgLS0tCiAgICAgICAgbGV0IG5ld19xdW90YTogSW50ID0gdmFsdWU7CiAgICAgICAgbGV0IHN0YXRlX3J1bm5pbmc6IFN0cmluZyA9ICJSVU5OSU5HIjsKCiAgICAgICAgLy8gLS0tIExvZ2ljIGZvciBDUFUgVElDSyAtLS0KICAgICAgICBsZXQgY3VycmVudF9pbnN0cnVjdGlvbjogU3RyaW5nID0gaW5zdHJ1Y3Rpb25fc2V0W2luc3RydWN0aW9uX2N1cnNvcl07CiAgICAgICAgbGV0IHByb3Bvc2VkX25leHRfY3Vyc29yOiBJbnQgPSBpbnN0cnVjdGlvbl9jdXJzb3IgKyAxOwogICAgICAgIGxldCBwcm9wb3NlZF9yZW1haW5pbmdfY3ljbGVzOiBJbnQgPSByZXNvdXJjZV9xdW90YV9jeWNsZXMgLSAxOwogICAgfQoKICAgIC8vIDMuIENIRUNLOiBUaGUgSW1wcmVnbmFibGUgU2FuZGJveAogICAgQ2hlY2sgewogICAgICAgIC8vIFJ1bGUgU2V0IEE6IEluaXRpYWxpemF0aW9uIGJ5IHRoZSBTY2hlZHVsZXIKICAgICAgICBpZiAoYWN0aW9uID09ICJTRVRfUVVPVEEiKSB7CiAgICAgICAgICAgIGFzc2VydChyZXF1ZXN0b3JfaWQgPT0gIm1kb19zY2hlZHVsZXIiKSAKICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIlNlY3VyaXR5IFZpb2xhdGlvbjogT25seSB0aGUgU2NoZWR1bGVyIGNhbiBzZXQgQ1BVIHF1b3Rhcy4iKTsKICAgICAgICAgICAgICAgIAogICAgICAgICAgICBhc3NlcnQoKGV4ZWN1dGlvbl9zdGF0ZSA9PSAiUkVBRFkiKSB8fCAoZXhlY3V0aW9uX3N0YXRlID09ICJSVU5OSU5HIikpIAogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiTGlmZWN5Y2xlIEVycm9yOiBDYW5ub3Qgd2FrZSBhIEhBTFRFRCBwcm9jZXNzLiIpOwogICAgICAgIH0KCiAgICAgICAgLy8gUnVsZSBTZXQgQjogQWN0dWFsIEV4ZWN1dGlvbgogICAgICAgIGlmIChhY3Rpb24gPT0gIlRJQ0siKSB7CiAgICAgICAgICAgIGFzc2VydChleGVjdXRpb25fc3RhdGUgPT0gIlJVTk5JTkciKSAKICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIkV4ZWN1dGlvbiBFcnJvcjogUHJvY2VzcyBpcyBub3QgaW4gYSBydW5uYWJsZSBzdGF0ZS4iKTsKICAgICAgICAgICAgICAgIAogICAgICAgICAgICBhc3NlcnQocHJvcG9zZWRfbmV4dF9jdXJzb3IgPD0gbGVuZ3RoKGluc3RydWN0aW9uX3NldCkpCiAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJFeGVjdXRpb24gRXJyb3I6IEluc3RydWN0aW9uIHBvaW50ZXIgb3V0IG9mIGJvdW5kcy4iKTsKCiAgICAgICAgICAgIGFzc2VydChwcm9wb3NlZF9yZW1haW5pbmdfY3ljbGVzID49IDApCiAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJSZXNvdXJjZSBFeGhhdXN0aW9uOiBDeWNsZSBxdW90YSBleGNlZWRlZC4iKTsKICAgICAgICB9CiAgICB9CgogICAgLy8gNC4gVFJBTlNGT1JNOiBUaGUgU3RhdGUgVXBkYXRlCiAgICAgICAgVHJhbnNmb3JtIHsKICAgICAgICAgICAgaWYgKGFjdGlvbiA9PSAiU0VUX1FVT1RBIikgewogICAgICAgICAgICAgICAgZW1pdCB7IAogICAgICAgICAgICAgICAgICAgIHJlc291cmNlX3F1b3RhX2N5Y2xlczogbmV3X3F1b3RhLAogICAgICAgICAgICAgICAgICAgIGV4ZWN1dGlvbl9zdGF0ZTogc3RhdGVfcnVubmluZwogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgaWYgKGFjdGlvbiA9PSAiVElDSyIpIHsKICAgICAgICAgICAgICAgIGVtaXQgeyAKICAgICAgICAgICAgICAgICAgICBpbnN0cnVjdGlvbl9jdXJzb3I6IHByb3Bvc2VkX25leHRfY3Vyc29yLAogICAgICAgICAgICAgICAgICAgIHJlc291cmNlX3F1b3RhX2N5Y2xlczogcHJvcG9zZWRfcmVtYWluaW5nX2N5Y2xlcwogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gLS0tIEZJWEVEOiBGbGF0dGVuZWQgQ29uZGl0aW9uIC0tLQogICAgICAgICAgICAvLyBJZiBpdCB3YXMgYSBUSUNLIGFjdGlvbiBBTkQgdGhlIGN1cnNvciBoaXQgdGhlIGVuZCwgaGFsdCBpdC4KICAgICAgICAgICAgaWYgKChhY3Rpb24gPT0gIlRJQ0siKSAmJiAocHJvcG9zZWRfbmV4dF9jdXJzb3IgPT0gbGVuZ3RoKGluc3RydWN0aW9uX3NldCkpKSB7CiAgICAgICAgICAgICAgICBlbWl0IHsgZXhlY3V0aW9uX3N0YXRlOiAiSEFMVEVEIiB9OwogICAgICAgICAgICB9CiAgICAgICAgfQp9"
+}

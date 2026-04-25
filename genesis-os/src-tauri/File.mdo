@@ -1,0 +1,551 @@
+{
+    "File": {
+        "id": "mdo_file",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "object_id": {
+                    "name": "object_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "owner_id": {
+                    "name": "owner_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "current_calculated_hash": {
+                    "name": "current_calculated_hash",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_token": {
+                    "name": "requestor_token",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "content": {
+                    "name": "content",
+                    "kind": "state",
+                    "type": "ByteStream",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "size": {
+                    "name": "size",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "mime_type": {
+                    "name": "mime_type",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "read_cursor": {
+                    "name": "read_cursor",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "write_cursor": {
+                    "name": "write_cursor",
+                    "kind": "state",
+                    "type": "Int",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0,
+                        "dataType": "Int"
+                    }
+                },
+                "input_data": {
+                    "name": "input_data",
+                    "kind": "requires",
+                    "type": "ByteStream",
+                    "initial_value": null
+                },
+                "input_offset": {
+                    "name": "input_offset",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "input_read_length": {
+                    "name": "input_read_length",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                },
+                "system_max_file_size": {
+                    "name": "system_max_file_size",
+                    "kind": "requires",
+                    "type": "Int",
+                    "initial_value": null
+                }
+            },
+            "requires": [
+                "object_id",
+                "owner_id",
+                "action",
+                "requestor_id",
+                "current_calculated_hash",
+                "requestor_token",
+                "mime_type",
+                "input_data",
+                "input_offset",
+                "input_read_length",
+                "system_max_file_size"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_appended_content",
+                "dataType": "ByteStream",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "append",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "content"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_data"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_size",
+                "dataType": "Int",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "+",
+                    "left": {
+                        "type": "Variable",
+                        "name": "size"
+                    },
+                    "right": {
+                        "type": "FunctionCall",
+                        "function_name": "length",
+                        "arguments": [
+                            {
+                                "type": "Variable",
+                                "name": "input_data"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_overwritten_content",
+                "dataType": "ByteStream",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "splice",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "content"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_offset"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_data"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_read_chunk",
+                "dataType": "ByteStream",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "slice",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "content"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_offset"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_read_length"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_read_cursor",
+                "dataType": "Int",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "min",
+                    "arguments": [
+                        {
+                            "type": "BinaryOp",
+                            "op": "+",
+                            "left": {
+                                "type": "Variable",
+                                "name": "input_offset"
+                            },
+                            "right": {
+                                "type": "Variable",
+                                "name": "input_read_length"
+                            }
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "size"
+                        }
+                    ]
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "||",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"WRITE\"",
+                            "dataType": "String"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"APPEND\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "<=",
+                            "left": {
+                                "type": "Variable",
+                                "name": "proposed_new_size"
+                            },
+                            "right": {
+                                "type": "Variable",
+                                "name": "system_max_file_size"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Resource Exhaustion: Max file size exceeded.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "<=",
+                            "left": {
+                                "type": "Variable",
+                                "name": "input_offset"
+                            },
+                            "right": {
+                                "type": "Variable",
+                                "name": "size"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Memory Violation: Write offset out of bounds (Sparse files disallowed).\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "FunctionCall",
+                                "function_name": "is_session_valid",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "requestor_token"
+                                    }
+                                ]
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Security Violation: Invalid or missing session token.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "&&",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "action"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"APPEND\"",
+                            "dataType": "String"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "Variable",
+                            "name": "mime_type"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"executable/genlang\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "requestor_id"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": "\"System_Compiler\"",
+                                "dataType": "String"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Security Violation: Only the Compiler may modify executable objects.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "FunctionCall",
+                                "function_name": "is_session_valid",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "requestor_token"
+                                    }
+                                ]
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Security Violation: Invalid or missing session token.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"APPEND\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "content": {
+                                "type": "Variable",
+                                "name": "proposed_appended_content"
+                            },
+                            "size": {
+                                "type": "Variable",
+                                "name": "proposed_new_size"
+                            },
+                            "write_cursor": {
+                                "type": "Variable",
+                                "name": "proposed_new_size"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"OVERWRITE\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "content": {
+                                "type": "Variable",
+                                "name": "proposed_overwritten_content"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"READ\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "EmitToRequestor",
+                        "payload": {
+                            "data": {
+                                "type": "Variable",
+                                "name": "proposed_read_chunk"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "read_cursor": {
+                                "type": "Variable",
+                                "name": "proposed_new_read_cursor"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

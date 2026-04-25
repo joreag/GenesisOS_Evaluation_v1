@@ -1,0 +1,499 @@
+{
+    "Ledger": {
+        "id": "mdo_ledger",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "tx_sender": {
+                    "name": "tx_sender",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "tx_receiver": {
+                    "name": "tx_receiver",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "tx_amount": {
+                    "name": "tx_amount",
+                    "kind": "requires",
+                    "type": "Float",
+                    "initial_value": null
+                },
+                "tx_signature": {
+                    "name": "tx_signature",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "tx_nonce": {
+                    "name": "tx_nonce",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "task_reference": {
+                    "name": "task_reference",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "balances": {
+                    "name": "balances",
+                    "kind": "state",
+                    "type": "Dictionary<String,Float>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                },
+                "transaction_history": {
+                    "name": "transaction_history",
+                    "kind": "state",
+                    "type": "Array<String>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                }
+            },
+            "requires": [
+                "action",
+                "requestor_id",
+                "tx_sender",
+                "tx_receiver",
+                "tx_amount",
+                "tx_signature",
+                "tx_nonce",
+                "task_reference"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "sender_balance",
+                "dataType": "Float",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "get_dict_float",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "balances"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "tx_sender"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "receiver_balance",
+                "dataType": "Float",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "get_dict_float",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "balances"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "tx_receiver"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_sender_balance",
+                "dataType": "Float",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "-",
+                    "left": {
+                        "type": "Variable",
+                        "name": "sender_balance"
+                    },
+                    "right": {
+                        "type": "Variable",
+                        "name": "tx_amount"
+                    }
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_receiver_balance",
+                "dataType": "Float",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "+",
+                    "left": {
+                        "type": "Variable",
+                        "name": "receiver_balance"
+                    },
+                    "right": {
+                        "type": "Variable",
+                        "name": "tx_amount"
+                    }
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "tx_record",
+                "dataType": "String",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "append",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "tx_sender"
+                        },
+                        {
+                            "type": "FunctionCall",
+                            "function_name": "append",
+                            "arguments": [
+                                {
+                                    "type": "Variable",
+                                    "name": "tx_receiver"
+                                },
+                                {
+                                    "type": "FunctionCall",
+                                    "function_name": "append",
+                                    "arguments": [
+                                        {
+                                            "type": "Variable",
+                                            "name": "task_reference"
+                                        },
+                                        {
+                                            "type": "Variable",
+                                            "name": "tx_nonce"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_tx_hash",
+                "dataType": "String",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "calculate_hash",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "tx_record"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_history",
+                "dataType": "Array<String>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "append",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "transaction_history"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "proposed_tx_hash"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "is_signed",
+                "dataType": "Bool",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "verify_signature",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "tx_sender"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "tx_record"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "tx_signature"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "temp_balances",
+                "dataType": "Dictionary<String,Float>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "set_dict_float",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "balances"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "tx_sender"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "proposed_sender_balance"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_balances",
+                "dataType": "Dictionary<String,Float>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "set_dict_float",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "temp_balances"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "tx_receiver"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "proposed_receiver_balance"
+                        }
+                    ]
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"PROCESS_TRANSACTION\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "Variable",
+                                "name": "is_signed"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Ledger Error: Invalid transaction signature.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "FunctionCall",
+                                "function_name": "is_nonce_fresh",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "tx_nonce"
+                                    }
+                                ]
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Ledger Error: Transaction nonce already used or stale.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": ">=",
+                            "left": {
+                                "type": "Variable",
+                                "name": "proposed_sender_balance"
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": 0.0,
+                                "dataType": "Float"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Ledger Error: Insufficient funds for transaction.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "BinaryOp",
+                                "op": "+",
+                                "left": {
+                                    "type": "Variable",
+                                    "name": "sender_balance"
+                                },
+                                "right": {
+                                    "type": "Variable",
+                                    "name": "receiver_balance"
+                                }
+                            },
+                            "right": {
+                                "type": "BinaryOp",
+                                "op": "+",
+                                "left": {
+                                    "type": "Variable",
+                                    "name": "proposed_sender_balance"
+                                },
+                                "right": {
+                                    "type": "Variable",
+                                    "name": "proposed_receiver_balance"
+                                }
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"Fatal Ledger Error: Value conservation mismatch.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"PROCESS_TRANSACTION\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "balances": {
+                                "type": "Variable",
+                                "name": "proposed_balances"
+                            },
+                            "transaction_history": {
+                                "type": "Variable",
+                                "name": "proposed_history"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_mdo": {
+                                "type": "Variable",
+                                "name": "tx_receiver"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"REWARD_RECEIVED\"",
+                                "dataType": "String"
+                            },
+                            "_input_amount": {
+                                "type": "Variable",
+                                "name": "tx_amount"
+                            },
+                            "_input_task": {
+                                "type": "Variable",
+                                "name": "task_reference"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

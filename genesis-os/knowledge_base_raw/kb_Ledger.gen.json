@@ -1,0 +1,157 @@
+{
+  "file_id": "Ledger.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "tx_sender": {
+          "type": "String",
+          "name": "tx_sender",
+          "initialValue": null
+        },
+        "tx_receiver": {
+          "type": "String",
+          "name": "tx_receiver",
+          "initialValue": null
+        },
+        "tx_amount": {
+          "type": "Float",
+          "name": "tx_amount",
+          "initialValue": null
+        },
+        "tx_signature": {
+          "type": "String",
+          "name": "tx_signature",
+          "initialValue": null
+        },
+        "tx_nonce": {
+          "type": "String",
+          "name": "tx_nonce",
+          "initialValue": null
+        },
+        "task_reference": {
+          "type": "String",
+          "name": "task_reference",
+          "initialValue": null
+        },
+        "transaction_history": {
+          "type": "Array<String>",
+          "name": "transaction_history",
+          "initialValue": "null"
+        },
+        "sender_balance": {
+          "type": "Float",
+          "name": "sender_balance",
+          "initialValue": "get_dict_float(balances, tx_sender)"
+        },
+        "receiver_balance": {
+          "type": "Float",
+          "name": "receiver_balance",
+          "initialValue": "get_dict_float(balances, tx_receiver)"
+        },
+        "proposed_sender_balance": {
+          "type": "Float",
+          "name": "proposed_sender_balance",
+          "initialValue": "sender_balance - tx_amount"
+        },
+        "proposed_receiver_balance": {
+          "type": "Float",
+          "name": "proposed_receiver_balance",
+          "initialValue": "receiver_balance + tx_amount"
+        },
+        "tx_record": {
+          "type": "String",
+          "name": "tx_record",
+          "initialValue": "append(tx_sender, append(tx_receiver, append(task_reference, tx_nonce)))"
+        },
+        "proposed_tx_hash": {
+          "type": "String",
+          "name": "proposed_tx_hash",
+          "initialValue": "calculate_hash(tx_record)"
+        },
+        "proposed_history": {
+          "type": "Array<String>",
+          "name": "proposed_history",
+          "initialValue": "append(transaction_history, proposed_tx_hash)"
+        },
+        "is_signed": {
+          "type": "Bool",
+          "name": "is_signed",
+          "initialValue": "verify_signature(tx_sender, tx_record, tx_signature)"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"PROCESS_TRANSACTION\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"PROCESS_TRANSACTION\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "sender_balance": [
+      "tx_sender"
+    ],
+    "receiver_balance": [
+      "tx_receiver"
+    ],
+    "proposed_sender_balance": [
+      "tx_amount",
+      "sender_balance"
+    ],
+    "proposed_receiver_balance": [
+      "tx_amount",
+      "receiver_balance"
+    ],
+    "tx_record": [
+      "tx_sender",
+      "tx_receiver",
+      "tx_nonce",
+      "task_reference"
+    ],
+    "proposed_tx_hash": [
+      "tx_record"
+    ],
+    "proposed_history": [
+      "action",
+      "transaction_history",
+      "proposed_tx_hash"
+    ],
+    "is_signed": [
+      "tx_sender",
+      "tx_signature",
+      "tx_record"
+    ]
+  },
+  "raw_content": "Ly8gTGVkZ2VyLmdlbiB2MC4zCi8vIFRoZSBpbnRlcm5hbCBNSUNULUNvaW4gYW5kIFJXVCAoUmlnaHQgdG8gV29yayBUb2tlbikgTGVkZ2VyLgovLyBSZWd1bGF0ZXMgQUkgZG9wYW1pbmUgKHJld2FyZHMpIGFuZCB0cmFja3MgaHVtYW4gY2FwaXRhbCBjb250cmlidXRpb25zLgoKTm9kZSBMZWRnZXIgewoKICAgIC8vIDEuIE1BUDogVGhlIFN0YXRlIG9mIHRoZSBFY29ub215CiAgICBNYXAgewogICAgICAgIHJlcXVpcmVzIGFjdGlvbjogU3RyaW5nOwogICAgICAgIHJlcXVpcmVzIHJlcXVlc3Rvcl9pZDogU3RyaW5nOyAKICAgICAgICAKICAgICAgICAvLyBUaGUgVHJhbnNhY3Rpb24gSW5wdXRzCiAgICAgICAgcmVxdWlyZXMgdHhfc2VuZGVyOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgdHhfcmVjZWl2ZXI6IFN0cmluZzsKICAgICAgICByZXF1aXJlcyB0eF9hbW91bnQ6IEZsb2F0OwogICAgICAgIHJlcXVpcmVzIHR4X3NpZ25hdHVyZTogU3RyaW5nOwogICAgICAgIHJlcXVpcmVzIHR4X25vbmNlOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgdGFza19yZWZlcmVuY2U6IFN0cmluZzsgCgogICAgICAgIC8vIFRoZSBMZWRnZXIgU3RhdGUKICAgICAgICBzdGF0ZSBiYWxhbmNlczogRGljdGlvbmFyeTxTdHJpbmcsIEZsb2F0PiA9IG51bGw7IAogICAgICAgIHN0YXRlIHRyYW5zYWN0aW9uX2hpc3Rvcnk6IEFycmF5PFN0cmluZz4gPSBudWxsOyAKICAgIH0KCiAgICAvLyAyLiBJVEVSQVRFOiBUaGUgVHJhbnNhY3Rpb24gUHJvY2Vzc2luZwogICAgSXRlcmF0ZSB7CiAgICAgICAgLy8gRmV0Y2ggY3VycmVudCBiYWxhbmNlcyAoU3lzY2FsbCB3aWxsIHJldHVybiAwLjAgaWYga2V5IGRvZXNuJ3QgZXhpc3QpCiAgICAgICAgbGV0IHNlbmRlcl9iYWxhbmNlOiBGbG9hdCA9IGdldF9kaWN0X2Zsb2F0KGJhbGFuY2VzLCB0eF9zZW5kZXIpOwogICAgICAgIGxldCByZWNlaXZlcl9iYWxhbmNlOiBGbG9hdCA9IGdldF9kaWN0X2Zsb2F0KGJhbGFuY2VzLCB0eF9yZWNlaXZlcik7CgogICAgICAgIC8vIENhbGN1bGF0ZSBuZXcgcHJvcG9zZWQgYmFsYW5jZXMKICAgICAgICBsZXQgcHJvcG9zZWRfc2VuZGVyX2JhbGFuY2U6IEZsb2F0ID0gc2VuZGVyX2JhbGFuY2UgLSB0eF9hbW91bnQ7CiAgICAgICAgbGV0IHByb3Bvc2VkX3JlY2VpdmVyX2JhbGFuY2U6IEZsb2F0ID0gcmVjZWl2ZXJfYmFsYW5jZSArIHR4X2Ftb3VudDsKCiAgICAgICAgLy8gQ3JlYXRlIGEgY3J5cHRvZ3JhcGhpYyBoYXNoIG9mIHRoaXMgc3BlY2lmaWMgdHJhbnNhY3Rpb24gcmVjb3JkCiAgICAgICAgbGV0IHR4X3JlY29yZDogU3RyaW5nID0gYXBwZW5kKHR4X3NlbmRlciwgYXBwZW5kKHR4X3JlY2VpdmVyLCBhcHBlbmQodGFza19yZWZlcmVuY2UsIHR4X25vbmNlKSkpOwogICAgICAgIGxldCBwcm9wb3NlZF90eF9oYXNoOiBTdHJpbmcgPSBjYWxjdWxhdGVfaGFzaCh0eF9yZWNvcmQpOwoKICAgICAgICAvLyBQcm9wb3NlIGFwcGVuZGluZyB0aGlzIGhhc2ggdG8gdGhlIHBlcm1hbmVudCBibG9ja2NoYWluIGhpc3RvcnkKICAgICAgICBsZXQgcHJvcG9zZWRfaGlzdG9yeTogQXJyYXk8U3RyaW5nPiA9IGFwcGVuZCh0cmFuc2FjdGlvbl9oaXN0b3J5LCBwcm9wb3NlZF90eF9oYXNoKTsKICAgICAgICAKICAgICAgICAvLyBDcnlwdG9ncmFwaGljIFZlcmlmaWNhdGlvbgogICAgICAgIC8vIChBc3N1bWluZyB0aGUgc2VuZGVyIElEIGlzIHRoZWlyIHB1YmxpYyBrZXkgZm9yIHNpbXBsaWNpdHkgaW4gdGhpcyBwcm90b3R5cGUpCiAgICAgICAgbGV0IGlzX3NpZ25lZDogQm9vbCA9IHZlcmlmeV9zaWduYXR1cmUodHhfc2VuZGVyLCB0eF9yZWNvcmQsIHR4X3NpZ25hdHVyZSk7CiAgICAgICAgCiAgICAgICAgLy8gUHJvcG9zZSB0aGUgdXBkYXRlZCBkaWN0aW9uYXJ5IHN0YXRlcwogICAgICAgIGxldCB0ZW1wX2JhbGFuY2VzOiBEaWN0aW9uYXJ5PFN0cmluZywgRmxvYXQ+ID0gc2V0X2RpY3RfZmxvYXQoYmFsYW5jZXMsIHR4X3NlbmRlciwgcHJvcG9zZWRfc2VuZGVyX2JhbGFuY2UpOwogICAgICAgIGxldCBwcm9wb3NlZF9iYWxhbmNlczogRGljdGlvbmFyeTxTdHJpbmcsIEZsb2F0PiA9IHNldF9kaWN0X2Zsb2F0KHRlbXBfYmFsYW5jZXMsIHR4X3JlY2VpdmVyLCBwcm9wb3NlZF9yZWNlaXZlcl9iYWxhbmNlKTsKICAgIH0KCiAgICAvLyAzLiBDSEVDSzogVGhlIENvbnNlbnN1cyBSdWxlcyAoRG91YmxlLVNwZW5kIFByZXZlbnRpb24pCiAgICBDaGVjayB7CiAgICAgICAgaWYgKGFjdGlvbiA9PSAiUFJPQ0VTU19UUkFOU0FDVElPTiIpIHsKICAgICAgICAgICAgLy8gUnVsZSAxOiBDcnlwdG9ncmFwaGljIEF1dGhlbnRpY2l0eQogICAgICAgICAgICBhc3NlcnQoaXNfc2lnbmVkID09IHRydWUpIAogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiTGVkZ2VyIEVycm9yOiBJbnZhbGlkIHRyYW5zYWN0aW9uIHNpZ25hdHVyZS4iKTsKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAvLyBSdWxlIDI6IFJlcGxheSBBdHRhY2sgUHJldmVudGlvbgogICAgICAgICAgICBhc3NlcnQoaXNfbm9uY2VfZnJlc2godHhfbm9uY2UpID09IHRydWUpCiAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJMZWRnZXIgRXJyb3I6IFRyYW5zYWN0aW9uIG5vbmNlIGFscmVhZHkgdXNlZCBvciBzdGFsZS4iKTsKCiAgICAgICAgICAgIC8vIFJ1bGUgMzogVGhlIERvdWJsZS1TcGVuZCAvIE92ZXJkcmFmdCBHYXRlCiAgICAgICAgICAgIC8vIElmIHRoZSBiYWxhbmNlIGRyb3BzIGJlbG93IHplcm8sIHRoZSB0cmFuc2FjdGlvbiBpcyBtYXRoZW1hdGljYWxseSBpbnZhbGlkLgogICAgICAgICAgICBhc3NlcnQocHJvcG9zZWRfc2VuZGVyX2JhbGFuY2UgPj0gMC4wKQogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiTGVkZ2VyIEVycm9yOiBJbnN1ZmZpY2llbnQgZnVuZHMgZm9yIHRyYW5zYWN0aW9uLiIpOwogICAgICAgICAgICAgICAgCiAgICAgICAgICAgIC8vIFJ1bGUgNDogU3lzdGVtIEludGVncml0eSAoVmFsdWUgQ29uc2VydmF0aW9uKQogICAgICAgICAgICAvLyBUaGUgbWF0aCBtdXN0IGJhbGFuY2UgcGVyZmVjdGx5LgogICAgICAgICAgICBhc3NlcnQoKHNlbmRlcl9iYWxhbmNlICsgcmVjZWl2ZXJfYmFsYW5jZSkgPT0gKHByb3Bvc2VkX3NlbmRlcl9iYWxhbmNlICsgcHJvcG9zZWRfcmVjZWl2ZXJfYmFsYW5jZSkpCiAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJGYXRhbCBMZWRnZXIgRXJyb3I6IFZhbHVlIGNvbnNlcnZhdGlvbiBtaXNtYXRjaC4iKTsKICAgICAgICB9CiAgICB9CgogICAgLy8gNC4gVFJBTlNGT1JNOiBUaGUgQmxvY2sgQ29tbWl0bWVudAogICAgVHJhbnNmb3JtIHsKICAgICAgICBpZiAoYWN0aW9uID09ICJQUk9DRVNTX1RSQU5TQUNUSU9OIikgewogICAgICAgICAgICAvLyBBdG9taWNhbGx5IHVwZGF0ZSBib3RoIGJhbGFuY2VzIGFuZCB0aGUgYmxvY2tjaGFpbiBoaXN0b3J5CiAgICAgICAgICAgIGVtaXQgewogICAgICAgICAgICAgICAgYmFsYW5jZXM6IHByb3Bvc2VkX2JhbGFuY2VzLAogICAgICAgICAgICAgICAgdHJhbnNhY3Rpb25faGlzdG9yeTogcHJvcG9zZWRfaGlzdG9yeQogICAgICAgICAgICB9OwogICAgICAgICAgICAKICAgICAgICAgICAgLy8gRW1pdCBhICJEb3BhbWluZSBIaXQiIHRvIHRoZSBBSSBBZ2VudCBpZiB0aGV5IHdlcmUgdGhlIHJlY2VpdmVyCiAgICAgICAgICAgIGVtaXQgewogICAgICAgICAgICAgICAgX3RhcmdldF9tZG86IHR4X3JlY2VpdmVyLAogICAgICAgICAgICAgICAgX2NvbW1hbmQ6ICJSRVdBUkRfUkVDRUlWRUQiLAogICAgICAgICAgICAgICAgX2lucHV0X2Ftb3VudDogdHhfYW1vdW50LCAgICAgIC8vIENIQU5HRUQgZnJvbSBfYW1vdW50CiAgICAgICAgICAgICAgICBfaW5wdXRfdGFzazogdGFza19yZWZlcmVuY2UgIC8vIENIQU5HRUQgZnJvbSBfdGFzawogICAgICAgICAgICB9OwogICAgICAgIH0KICAgIH0KfQ=="
+}

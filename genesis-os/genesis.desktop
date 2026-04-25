@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=GenesisOS
+Comment=React/Rust Operating Environment
+Exec=/home/YOUR_USER/GenesisOS/start_genesis.sh
+Type=Application

@@ -1,0 +1,185 @@
+{
+  "file_id": "MdoObject.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "object_id": {
+          "type": "String",
+          "name": "object_id",
+          "initialValue": null
+        },
+        "owner_id": {
+          "type": "String",
+          "name": "owner_id",
+          "initialValue": ""
+        },
+        "created_at": {
+          "type": "Int",
+          "name": "created_at",
+          "initialValue": null
+        },
+        "access_permissions": {
+          "type": "Int",
+          "name": "access_permissions",
+          "initialValue": "0700"
+        },
+        "integrity_hash": {
+          "type": "String",
+          "name": "integrity_hash",
+          "initialValue": ""
+        },
+        "status": {
+          "type": "String",
+          "name": "status",
+          "initialValue": "ACTIVE"
+        },
+        "input_new_owner_id": {
+          "type": "String",
+          "name": "input_new_owner_id",
+          "initialValue": null
+        },
+        "input_new_permissions": {
+          "type": "Int",
+          "name": "input_new_permissions",
+          "initialValue": null
+        },
+        "input_data": {
+          "type": "ByteStream",
+          "name": "input_data",
+          "initialValue": null
+        },
+        "input_offset": {
+          "type": "Int",
+          "name": "input_offset",
+          "initialValue": null
+        },
+        "input_read_length": {
+          "type": "Int",
+          "name": "input_read_length",
+          "initialValue": null
+        },
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "current_calculated_hash": {
+          "type": "String",
+          "name": "current_calculated_hash",
+          "initialValue": null
+        },
+        "input_signed_challenge": {
+          "type": "String",
+          "name": "input_signed_challenge",
+          "initialValue": null
+        },
+        "input_challenge_nonce": {
+          "type": "String",
+          "name": "input_challenge_nonce",
+          "initialValue": null
+        },
+        "proposed_new_owner": {
+          "type": "String",
+          "name": "proposed_new_owner",
+          "initialValue": "input_new_owner_id"
+        },
+        "proposed_new_permissions": {
+          "type": "Int",
+          "name": "proposed_new_permissions",
+          "initialValue": "input_new_permissions"
+        },
+        "proposed_new_hash": {
+          "type": "String",
+          "name": "proposed_new_hash",
+          "initialValue": "calculate_hash(self)"
+        },
+        "proposed_status": {
+          "type": "String",
+          "name": "proposed_status",
+          "initialValue": "DELETED"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "ASSERT: object_id != \"\"",
+          "actions": [
+            "THROW DISSONANCE: \"Fatal: Object lacks unique identifier.\""
+          ],
+          "controlVars": [
+            "object_id"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "ASSERT: status != \"DELETED\"",
+          "actions": [
+            "THROW DISSONANCE: \"Lifecycle Error: Object is tombstoned.\""
+          ],
+          "controlVars": [
+            "status"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"TRANSFER_OWNERSHIP\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"UPDATE_PERMISSIONS\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"DELETE\"",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT]",
+              "newValue": "status: proposed_status"
+            }
+          ],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "proposed_new_owner": [
+      "owner_id",
+      "input_new_owner_id"
+    ],
+    "proposed_new_permissions": [
+      "input_new_permissions"
+    ],
+    "[EMIT]": [
+      "action",
+      "status",
+      "proposed_status"
+    ]
+  },
+  "raw_content": "Ly8gTWRvT2JqZWN0LmdlbiB2MC4yCi8vIFRoZSBiYXNlIGdlbmV0aWMgc3RydWN0dXJlIGZvciBhbGwgaXRlbXMgaW4gR2VuZXNpc09TLgoKTm9kZSBNZG9PYmplY3QgewoKICAgIC8vIDEuIE1BUDogVGhlIGludHJpbnNpYywgaW1tdXRhYmxlIHByb3BlcnRpZXMgb2YgZXhpc3RlbmNlLgogICAgTWFwIHsKICAgICAgICAvLyAtLS0gQ29yZSBQcm9wZXJ0aWVzIC0tLQogICAgICAgIHJlcXVpcmVzIG9iamVjdF9pZDogU3RyaW5nOyAKICAgICAgICBzdGF0ZSBvd25lcl9pZDogU3RyaW5nID0gIiI7IAogICAgICAgIHJlcXVpcmVzIGNyZWF0ZWRfYXQ6IEludDsKICAgICAgICBzdGF0ZSBhY2Nlc3NfcGVybWlzc2lvbnM6IEludCA9IDA3MDA7CiAgICAgICAgc3RhdGUgaW50ZWdyaXR5X2hhc2g6IFN0cmluZyA9ICIiOwogICAgICAgIHN0YXRlIHN0YXR1czogU3RyaW5nID0gIkFDVElWRSI7CiAgICAgICAgCiAgICAgICAgLy8gLS0tIEFjdGlvbiBJbnB1dHMgLS0tCiAgICAgICAgcmVxdWlyZXMgaW5wdXRfbmV3X293bmVyX2lkOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgaW5wdXRfbmV3X3Blcm1pc3Npb25zOiBJbnQ7CiAgICAgICAgcmVxdWlyZXMgaW5wdXRfZGF0YTogQnl0ZVN0cmVhbTsgCiAgICAgICAgcmVxdWlyZXMgaW5wdXRfb2Zmc2V0OiBJbnQ7ICAgICAgIAogICAgICAgIHJlcXVpcmVzIGlucHV0X3JlYWRfbGVuZ3RoOiBJbnQ7IAogICAgICAgIHJlcXVpcmVzIGFjdGlvbjogU3RyaW5nOyAgICAgICAgICAKICAgICAgICByZXF1aXJlcyByZXF1ZXN0b3JfaWQ6IFN0cmluZzsgICAgCiAgICAgICAgcmVxdWlyZXMgY3VycmVudF9jYWxjdWxhdGVkX2hhc2g6IFN0cmluZzsgCiAgICAgICAgcmVxdWlyZXMgaW5wdXRfc2lnbmVkX2NoYWxsZW5nZTogU3RyaW5nOyAKICAgICAgICByZXF1aXJlcyBpbnB1dF9jaGFsbGVuZ2Vfbm9uY2U6IFN0cmluZzsgCiAgICB9CgogICAgLy8gMi4gSVRFUkFURTogVGhlIHByb3Bvc2VkIGNoYW5nZXMuCiAgICBJdGVyYXRlIHsKICAgICAgICBsZXQgcHJvcG9zZWRfbmV3X293bmVyOiBTdHJpbmcgPSBpbnB1dF9uZXdfb3duZXJfaWQ7CiAgICAgICAgbGV0IHByb3Bvc2VkX25ld19wZXJtaXNzaW9uczogSW50ID0gaW5wdXRfbmV3X3Blcm1pc3Npb25zOwogICAgICAgIGxldCBwcm9wb3NlZF9uZXdfaGFzaDogU3RyaW5nID0gY2FsY3VsYXRlX2hhc2goc2VsZik7CiAgICAgICAgbGV0IHByb3Bvc2VkX3N0YXR1czogU3RyaW5nID0gIkRFTEVURUQiOwogICAgfQoKICAgIC8vIDMuIENIRUNLOiBUaGUgdW5pdmVyc2FsIGxhd3Mgb2YgR2VuZXNpc09TLgogICAgQ2hlY2sgewogICAgICAgIGFzc2VydChvYmplY3RfaWQgIT0gIiIpID0+IERpc3NvbmFuY2UoIkZhdGFsOiBPYmplY3QgbGFja3MgdW5pcXVlIGlkZW50aWZpZXIuIik7CiAgICAgICAgYXNzZXJ0KChyZXF1ZXN0b3JfaWQgPT0gb3duZXJfaWQpIHx8IChyZXF1ZXN0b3JfaWQgPT0gIlN5c3RlbV9Sb290IikpIAogICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTZWN1cml0eSBWaW9sYXRpb246IFVuYXV0aG9yaXplZCBtb2RpZmljYXRpb24gYXR0ZW1wdC4iKTsKICAgICAgICBhc3NlcnQoY3VycmVudF9jYWxjdWxhdGVkX2hhc2ggPT0gaW50ZWdyaXR5X2hhc2gpIAogICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJJbnRlZ3JpdHkgRXJyb3I6IE9iamVjdCBzdGF0ZSBjb3JydXB0ZWQgb3IgYWx0ZXJlZCBleHRlcm5hbGx5LiIpOwogICAgICAgIGFzc2VydChzdGF0dXMgIT0gIkRFTEVURUQiKSA9PiBEaXNzb25hbmNlKCJMaWZlY3ljbGUgRXJyb3I6IE9iamVjdCBpcyB0b21ic3RvbmVkLiIpOwogICAgfQoKICAgIC8vIDQuIFRSQU5TRk9STTogVGhlIGNvbW1pdHRlZCBzdGF0ZSBjaGFuZ2VzLgogICAgVHJhbnNmb3JtIHsKICAgICAgICBpZiAoYWN0aW9uID09ICJUUkFOU0ZFUl9PV05FUlNISVAiKSB7CiAgICAgICAgICAgIC8vIEF0b21pYyBzdGF0ZSBjb21taXRtZW50CiAgICAgICAgICAgIGVtaXQgeyAKICAgICAgICAgICAgICAgIG93bmVyX2lkOiBwcm9wb3NlZF9uZXdfb3duZXIsCiAgICAgICAgICAgICAgICBpbnRlZ3JpdHlfaGFzaDogcHJvcG9zZWRfbmV3X2hhc2gKICAgICAgICAgICAgfTsgCiAgICAgICAgfQogICAgICAgIAogICAgICAgIGlmIChhY3Rpb24gPT0gIlVQREFURV9QRVJNSVNTSU9OUyIpIHsKICAgICAgICAgICAgLy8gQXRvbWljIHN0YXRlIGNvbW1pdG1lbnQKICAgICAgICAgICAgZW1pdCB7IAogICAgICAgICAgICAgICAgYWNjZXNzX3Blcm1pc3Npb25zOiBwcm9wb3NlZF9uZXdfcGVybWlzc2lvbnMsCiAgICAgICAgICAgICAgICBpbnRlZ3JpdHlfaGFzaDogcHJvcG9zZWRfbmV3X2hhc2gKICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIGlmIChhY3Rpb24gPT0gIkRFTEVURSIpIHsKICAgICAgICAgICAgZW1pdCB7IHN0YXR1czogcHJvcG9zZWRfc3RhdHVzIH07CiAgICAgICAgfQogICAgfQp9"
+}

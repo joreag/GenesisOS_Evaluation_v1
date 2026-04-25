@@ -1,0 +1,224 @@
+{
+  "file_id": "Identity.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "object_id": {
+          "type": "String",
+          "name": "object_id",
+          "initialValue": null
+        },
+        "owner_id": {
+          "type": "String",
+          "name": "owner_id",
+          "initialValue": null
+        },
+        "entity_name": {
+          "type": "String",
+          "name": "entity_name",
+          "initialValue": null
+        },
+        "entity_type": {
+          "type": "String",
+          "name": "entity_type",
+          "initialValue": null
+        },
+        "clearance_level": {
+          "type": "Int",
+          "name": "clearance_level",
+          "initialValue": "0"
+        },
+        "public_key": {
+          "type": "String",
+          "name": "public_key",
+          "initialValue": null
+        },
+        "roles": {
+          "type": "Array<String>",
+          "name": "roles",
+          "initialValue": "null"
+        },
+        "auth_status": {
+          "type": "String",
+          "name": "auth_status",
+          "initialValue": "LOCKED"
+        },
+        "last_auth_time": {
+          "type": "Int",
+          "name": "last_auth_time",
+          "initialValue": "0"
+        },
+        "current_session_token": {
+          "type": "String",
+          "name": "current_session_token",
+          "initialValue": ""
+        },
+        "max_session_duration": {
+          "type": "Int",
+          "name": "max_session_duration",
+          "initialValue": "3600"
+        },
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "input_signed_challenge": {
+          "type": "String",
+          "name": "input_signed_challenge",
+          "initialValue": null
+        },
+        "input_challenge_nonce": {
+          "type": "String",
+          "name": "input_challenge_nonce",
+          "initialValue": null
+        },
+        "input_new_roles": {
+          "type": "Array<String>",
+          "name": "input_new_roles",
+          "initialValue": null
+        },
+        "proposed_auth_status": {
+          "type": "String",
+          "name": "proposed_auth_status",
+          "initialValue": "AUTHENTICATED"
+        },
+        "proposed_new_session_token": {
+          "type": "String",
+          "name": "proposed_new_session_token",
+          "initialValue": "generate_secure_token()"
+        },
+        "proposed_auth_time": {
+          "type": "Int",
+          "name": "proposed_auth_time",
+          "initialValue": "current_system_time()"
+        },
+        "signature_valid": {
+          "type": "Bool",
+          "name": "signature_valid",
+          "initialValue": "verify_signature(public_key, input_challenge_nonce, input_signed_challenge)"
+        },
+        "proposed_new_roles": {
+          "type": "Array<String>",
+          "name": "proposed_new_roles",
+          "initialValue": "input_new_roles"
+        },
+        "proposed_locked_status": {
+          "type": "String",
+          "name": "proposed_locked_status",
+          "initialValue": "LOCKED"
+        },
+        "proposed_cleared_token": {
+          "type": "String",
+          "name": "proposed_cleared_token",
+          "initialValue": ""
+        },
+        "requestor_identity": {
+          "type": "Identity",
+          "name": "requestor_identity",
+          "initialValue": "get_identity(requestor_id)"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"AUTHENTICATE\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"UPDATE_ROLES\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"VERIFY_SESSION\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"AUTHENTICATE\"",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT_TO_REQUESTOR]",
+              "newValue": "token: proposed_new_session_token"
+            }
+          ],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"UPDATE_ROLES\"",
+          "actions": [
+            {
+              "type": "UPDATE_STATE",
+              "variable": "[EMIT]",
+              "newValue": "roles: proposed_new_roles"
+            }
+          ],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "(action == \"REVOKE\") || (action == \"LOGOUT\")",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "signature_valid": [
+      "public_key",
+      "input_signed_challenge",
+      "input_challenge_nonce"
+    ],
+    "proposed_new_roles": [
+      "roles",
+      "input_new_roles"
+    ],
+    "requestor_identity": [
+      "requestor_id"
+    ],
+    "[EMIT_TO_REQUESTOR]": [
+      "action",
+      "proposed_new_session_token"
+    ],
+    "[EMIT]": [
+      "action",
+      "roles",
+      "proposed_new_roles"
+    ]
+  },
+  "raw_content": "Ly8gSWRlbnRpdHkuZ2VuIHYwLjIKLy8gVGhlIE1ETyByZXByZXNlbnRpbmcgYSBjcnlwdG9ncmFwaGljIGFjdG9yIChVc2VyLCBTeXN0ZW0gU2VydmljZSwgb3IgQUkgQWdlbnQpIGluIEdlbmVzaXNPUy4KLy8gSW5oZXJpdHMgZnJvbSBNZG9PYmplY3QgKFJlcXVpcmVzIElELCBPd25lciwgSW50ZWdyaXR5IEhhc2gsIFN0YXR1cykuCgpOb2RlIElkZW50aXR5IHsKCiAgICAvLyAxLiBNQVA6IFRoZSBjcnlwdG9ncmFwaGljIGNvbnRleHQgb2YgdGhlIGVudGl0eS4KICAgIE1hcCB7CiAgICAgICAgLy8gLS0tIENvcmUgUHJvcGVydGllcyAtLS0KICAgICAgICByZXF1aXJlcyBvYmplY3RfaWQ6IFN0cmluZzsKICAgICAgICByZXF1aXJlcyBvd25lcl9pZDogU3RyaW5nOwogICAgICAgIHJlcXVpcmVzIGVudGl0eV9uYW1lOiBTdHJpbmc7ICAgICAgCiAgICAgICAgcmVxdWlyZXMgZW50aXR5X3R5cGU6IFN0cmluZzsgICAgICAKICAgICAgICBzdGF0ZSBjbGVhcmFuY2VfbGV2ZWw6IEludCA9IDA7CiAgICAgICAgcmVxdWlyZXMgcHVibGljX2tleTogU3RyaW5nOwogICAgICAgIHN0YXRlIHJvbGVzOiBBcnJheTxTdHJpbmc+ID0gbnVsbDsKICAgICAgICBzdGF0ZSBhdXRoX3N0YXR1czogU3RyaW5nID0gIkxPQ0tFRCI7CiAgICAgICAgc3RhdGUgbGFzdF9hdXRoX3RpbWU6IEludCA9IDA7CiAgICAgICAgc3RhdGUgY3VycmVudF9zZXNzaW9uX3Rva2VuOiBTdHJpbmcgPSAiIjsKICAgICAgICBzdGF0ZSBtYXhfc2Vzc2lvbl9kdXJhdGlvbjogSW50ID0gMzYwMDsgLy8gU2Vzc2lvbiBkdXJhdGlvbiBpbiBzZWNvbmRzCgogICAgICAgIC8vIC0tLSBBY3Rpb24gQ29udGV4dCAoVGhlIEFQSSkgLS0tCiAgICAgICAgcmVxdWlyZXMgYWN0aW9uOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgcmVxdWVzdG9yX2lkOiBTdHJpbmc7CgogICAgICAgIC8vIC0tLSBJbnB1dHMgZm9yICJBVVRIRU5USUNBVEUiIGFjdGlvbiAtLS0KICAgICAgICByZXF1aXJlcyBpbnB1dF9zaWduZWRfY2hhbGxlbmdlOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgaW5wdXRfY2hhbGxlbmdlX25vbmNlOiBTdHJpbmc7CgogICAgICAgIC8vIC0tLSBJbnB1dCBmb3IgIlVQREFURV9ST0xFUyIgYWN0aW9uIC0tLQogICAgICAgIHJlcXVpcmVzIGlucHV0X25ld19yb2xlczogQXJyYXk8U3RyaW5nPjsKICAgIH0KICAgIAogICAgLy8gMi4gSVRFUkFURTogVGhlIHByb3Bvc2VkIGF1dGhlbnRpY2F0aW9uIG9wZXJhdGlvbnMuCiAgICBJdGVyYXRlIHsKICAgICAgICAvLyBPcGVyYXRpb24gQTogUHJvcG9zZSBBdXRoZW50aWNhdGlvbiAoTG9naW4pCiAgICAgICAgbGV0IHByb3Bvc2VkX2F1dGhfc3RhdHVzOiBTdHJpbmcgPSAiQVVUSEVOVElDQVRFRCI7CiAgICAgICAgbGV0IHByb3Bvc2VkX25ld19zZXNzaW9uX3Rva2VuOiBTdHJpbmcgPSBnZW5lcmF0ZV9zZWN1cmVfdG9rZW4oKTsKICAgICAgICBsZXQgcHJvcG9zZWRfYXV0aF90aW1lOiBJbnQgPSBjdXJyZW50X3N5c3RlbV90aW1lKCk7CiAgICAgICAgCiAgICAgICAgLy8gVGhlIENyeXB0b2dyYXBoaWMgVmVyaWZpY2F0aW9uCiAgICAgICAgbGV0IHNpZ25hdHVyZV92YWxpZDogQm9vbCA9IHZlcmlmeV9zaWduYXR1cmUocHVibGljX2tleSwgaW5wdXRfY2hhbGxlbmdlX25vbmNlLCBpbnB1dF9zaWduZWRfY2hhbGxlbmdlKTsKCiAgICAgICAgLy8gT3BlcmF0aW9uIEI6IFByb3Bvc2UgUm9sZSBNb2RpZmljYXRpb24KICAgICAgICBsZXQgcHJvcG9zZWRfbmV3X3JvbGVzOiBBcnJheTxTdHJpbmc+ID0gaW5wdXRfbmV3X3JvbGVzOwogICAgICAgIAogICAgICAgIC8vIE9wZXJhdGlvbiBDOiBQcm9wb3NlIFJldm9jYXRpb24KICAgICAgICBsZXQgcHJvcG9zZWRfbG9ja2VkX3N0YXR1czogU3RyaW5nID0gIkxPQ0tFRCI7CiAgICAgICAgbGV0IHByb3Bvc2VkX2NsZWFyZWRfdG9rZW46IFN0cmluZyA9ICIiOwogICAgICAgIAogICAgICAgIC8vIE9wZXJhdGlvbiBEOiBGZXRjaCBSZXF1ZXN0b3IgQ29udGV4dCBmb3IgQXV0aG9yaXphdGlvbiBDaGVjawogICAgICAgIGxldCByZXF1ZXN0b3JfaWRlbnRpdHk6IElkZW50aXR5ID0gZ2V0X2lkZW50aXR5KHJlcXVlc3Rvcl9pZCk7CiAgICB9CgogICAgLy8gMy4gQ0hFQ0s6IFRoZSBPTVpUQSBJZGVudGl0eSBFbmZvcmNlbWVudCBHYXRlLgogICAgQ2hlY2sgewogICAgICAgIC8vIFJ1bGUgMTogVGhlIENyeXB0b2dyYXBoaWMgUHJvb2YgR2F0ZQogICAgICAgIGlmIChhY3Rpb24gPT0gIkFVVEhFTlRJQ0FURSIpIHsKICAgICAgICAgICAgYXNzZXJ0KHNpZ25hdHVyZV92YWxpZCA9PSB0cnVlKQogICAgICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiQXV0aGVudGljYXRpb24gRmFpbGVkOiBJbnZhbGlkIGNyeXB0b2dyYXBoaWMgc2lnbmF0dXJlLiIpOwogICAgICAgICAgICAgICAgCiAgICAgICAgICAgIC8vIFByZXZlbnQgcmVwbGF5IGF0dGFja3MKICAgICAgICAgICAgYXNzZXJ0KGlzX25vbmNlX2ZyZXNoKGlucHV0X2NoYWxsZW5nZV9ub25jZSkgPT0gdHJ1ZSkKICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIkF1dGhlbnRpY2F0aW9uIEZhaWxlZDogU3RhbGUgb3IgcmV1c2VkIG5vbmNlIGRldGVjdGVkLiIpOwogICAgICAgIH0KCiAgICAgICAgLy8gUnVsZSAyOiBUaGUgQXV0aG9yaXphdGlvbiBHYXRlIChSb2xlIE1vZGlmaWNhdGlvbikKICAgICAgICBpZiAoYWN0aW9uID09ICJVUERBVEVfUk9MRVMiKSB7CiAgICAgICAgICAgICBhc3NlcnQocmVxdWVzdG9yX2lkZW50aXR5LmNsZWFyYW5jZV9sZXZlbCA+IGNsZWFyYW5jZV9sZXZlbCkKICAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTZWN1cml0eSBWaW9sYXRpb246IFJlcXVlc3RvciBsYWNrcyBjbGVhcmFuY2UgdG8gbW9kaWZ5IHRoaXMgaWRlbnRpdHkuIik7CiAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICBhc3NlcnQocmVxdWVzdG9yX2lkZW50aXR5LmNsZWFyYW5jZV9sZXZlbCA+PSA4KQogICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIlNlY3VyaXR5IFZpb2xhdGlvbjogT25seSBIaWdoLUFkbWluIGxldmVsIGNhbiBhc3NpZ24gcm9sZXMuIik7CiAgICAgICAgfQoKICAgICAgICAvLyBSdWxlIDM6IFRoZSBTZXNzaW9uIFRpbWVvdXQgR2F0ZQogICAgICAgIGlmIChhY3Rpb24gPT0gIlZFUklGWV9TRVNTSU9OIikgewogICAgICAgICAgICAgYXNzZXJ0KGF1dGhfc3RhdHVzID09ICJBVVRIRU5USUNBVEVEIikKICAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTZXNzaW9uIEVycm9yOiBJZGVudGl0eSBpcyBjdXJyZW50bHkgbG9ja2VkLiIpOwogICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgYXNzZXJ0KChjdXJyZW50X3N5c3RlbV90aW1lKCkgLSBsYXN0X2F1dGhfdGltZSkgPCBtYXhfc2Vzc2lvbl9kdXJhdGlvbikKICAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTZXNzaW9uIEVycm9yOiBUb2tlbiBleHBpcmVkLiBSZS1hdXRoZW50aWNhdGlvbiByZXF1aXJlZC4iKTsKICAgICAgICB9CiAgICB9CgogICAgLy8gNC4gVFJBTlNGT1JNOiBUaGUgU3RhdGUgQ29tbWl0bWVudC4KICAgIFRyYW5zZm9ybSB7CiAgICAgICAgaWYgKGFjdGlvbiA9PSAiQVVUSEVOVElDQVRFIikgewogICAgICAgICAgICBlbWl0IHsgCiAgICAgICAgICAgICAgICBhdXRoX3N0YXR1czogcHJvcG9zZWRfYXV0aF9zdGF0dXMsCiAgICAgICAgICAgICAgICBjdXJyZW50X3Nlc3Npb25fdG9rZW46IHByb3Bvc2VkX25ld19zZXNzaW9uX3Rva2VuLAogICAgICAgICAgICAgICAgbGFzdF9hdXRoX3RpbWU6IHByb3Bvc2VkX2F1dGhfdGltZQogICAgICAgICAgICB9OwogICAgICAgICAgICBlbWl0X3RvX3JlcXVlc3RvciB7IHRva2VuOiBwcm9wb3NlZF9uZXdfc2Vzc2lvbl90b2tlbiB9OwogICAgICAgIH0KCiAgICAgICAgaWYgKGFjdGlvbiA9PSAiVVBEQVRFX1JPTEVTIikgewogICAgICAgICAgICBlbWl0IHsgcm9sZXM6IHByb3Bvc2VkX25ld19yb2xlcyB9OwogICAgICAgIH0KCiAgICAgICAgaWYgKChhY3Rpb24gPT0gIlJFVk9LRSIpIHx8IChhY3Rpb24gPT0gIkxPR09VVCIpKSB7CiAgICAgICAgICAgIGVtaXQgeyAKICAgICAgICAgICAgICAgIGF1dGhfc3RhdHVzOiBwcm9wb3NlZF9sb2NrZWRfc3RhdHVzLAogICAgICAgICAgICAgICAgY3VycmVudF9zZXNzaW9uX3Rva2VuOiBwcm9wb3NlZF9jbGVhcmVkX3Rva2VuCiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgfQp9"
+}

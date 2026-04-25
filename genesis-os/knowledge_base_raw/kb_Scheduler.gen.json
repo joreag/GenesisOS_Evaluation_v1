@@ -1,0 +1,167 @@
+{
+  "file_id": "Scheduler.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "requested_process_memory": {
+          "type": "Int",
+          "name": "requested_process_memory",
+          "initialValue": null
+        },
+        "command": {
+          "type": "String",
+          "name": "command",
+          "initialValue": ""
+        },
+        "value": {
+          "type": "Int",
+          "name": "value",
+          "initialValue": "0"
+        },
+        "address": {
+          "type": "Int",
+          "name": "address",
+          "initialValue": "0"
+        },
+        "running_process": {
+          "type": "String",
+          "name": "running_process",
+          "initialValue": ""
+        },
+        "ready_queue": {
+          "type": "Array<String>",
+          "name": "ready_queue",
+          "initialValue": "null"
+        },
+        "blocked_queue": {
+          "type": "Array<String>",
+          "name": "blocked_queue",
+          "initialValue": "null"
+        },
+        "total_cpu_load": {
+          "type": "Float",
+          "name": "total_cpu_load",
+          "initialValue": "0.0"
+        },
+        "available_memory": {
+          "type": "Int",
+          "name": "available_memory",
+          "initialValue": "0"
+        },
+        "system_uptime": {
+          "type": "Int",
+          "name": "system_uptime",
+          "initialValue": "0"
+        },
+        "current_tick": {
+          "type": "Int",
+          "name": "current_tick",
+          "initialValue": "0"
+        },
+        "default_time_slice": {
+          "type": "Int",
+          "name": "default_time_slice",
+          "initialValue": null
+        },
+        "proposed_new_tick": {
+          "type": "Int",
+          "name": "proposed_new_tick",
+          "initialValue": "current_tick + 1"
+        },
+        "next_process_candidate": {
+          "type": "String",
+          "name": "next_process_candidate",
+          "initialValue": "determine_next_process(ready_queue)"
+        },
+        "proposed_cpu_load": {
+          "type": "Float",
+          "name": "proposed_cpu_load",
+          "initialValue": "calculate_system_load(ready_queue, blocked_queue)"
+        },
+        "process_to_terminate": {
+          "type": "String",
+          "name": "process_to_terminate",
+          "initialValue": "identify_critical_dissonance(ready_queue, running_process)"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"SCHEDULE_NEXT\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"SPAWN_NEW_PROCESS\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "process_to_terminate != null",
+          "actions": [],
+          "controlVars": [
+            "process_to_terminate"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"SCHEDULE_NEXT\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        },
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"TERMINATE_PROCESS\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "proposed_new_tick": [
+      "current_tick"
+    ],
+    "next_process_candidate": [
+      "ready_queue"
+    ],
+    "proposed_cpu_load": [
+      "ready_queue",
+      "blocked_queue"
+    ],
+    "process_to_terminate": [
+      "running_process",
+      "ready_queue"
+    ]
+  },
+  "raw_content": "Ly8gU2NoZWR1bGVyLmdlbiB2MC4yLjIKLy8gVGhlIE1hc3RlciBNRE8gZm9yIGN5Y2xlIGFsbG9jYXRpb24gYW5kIFByb2Nlc3MgbGlmZWN5Y2xlLgoKTm9kZSBTY2hlZHVsZXIgewoKICAgIC8vIDEuIE1BUDogVGhlIGdsb2JhbCBleGVjdXRpb24gZW52aXJvbm1lbnQuCiAgICBNYXAgewogICAgICAgIC8vIC0tLSBBY3Rpb24vQ29udGV4dCBJbnB1dHMgLS0tCiAgICAgICAgcmVxdWlyZXMgYWN0aW9uOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgcmVxdWVzdG9yX2lkOiBTdHJpbmc7CiAgICAgICAgcmVxdWlyZXMgcmVxdWVzdGVkX3Byb2Nlc3NfbWVtb3J5OiBJbnQ7CiAgICAgICAgCiAgICAgICAgLy8gLS0tIFNjaGVkdWxlci1TcGVjaWZpYyBQcm9wZXJ0aWVzIC0tLQogICAgICAgIHN0YXRlIGNvbW1hbmQ6IFN0cmluZyA9ICIiOwogICAgICAgIHN0YXRlIHZhbHVlOiBJbnQgPSAwOwogICAgICAgIHN0YXRlIGFkZHJlc3M6IEludCA9IDA7CiAgICAgICAgCiAgICAgICAgc3RhdGUgcnVubmluZ19wcm9jZXNzOiBTdHJpbmcgPSAiIjsgICAgICAKCiAgICAgICAgLy8gUXVldWVzIChQcm9jZXNzIElEcyBhcmUgU3RyaW5ncykKICAgICAgICBzdGF0ZSByZWFkeV9xdWV1ZTogQXJyYXk8U3RyaW5nPiA9IG51bGw7ICAgCiAgICAgICAgc3RhdGUgYmxvY2tlZF9xdWV1ZTogQXJyYXk8U3RyaW5nPiA9IG51bGw7IAoKICAgICAgICAvLyBTeXN0ZW0gSGVhbHRoIE1ldHJpY3MKICAgICAgICBzdGF0ZSB0b3RhbF9jcHVfbG9hZDogRmxvYXQgPSAwLjA7ICAgICAKICAgICAgICBzdGF0ZSBhdmFpbGFibGVfbWVtb3J5OiBJbnQgPSAwOyAgICAgICAgICAgCiAgICAgICAgc3RhdGUgc3lzdGVtX3VwdGltZTogSW50ID0gMDsgICAgICAgICAgCiAgICAgICAgCiAgICAgICAgLy8gVGhlIGN1cnJlbnQgIlRpY2siCiAgICAgICAgc3RhdGUgY3VycmVudF90aWNrOiBJbnQgPSAwOwogICAgICAgIAogICAgICAgIC8vIEN5Y2xlIEJ1ZGdldCBDb25maWcKICAgICAgICByZXF1aXJlcyBkZWZhdWx0X3RpbWVfc2xpY2U6IEludDsKICAgIH0KCiAgICAvLyAyLiBJVEVSQVRFOiBUaGUgcHJvcG9zZWQgY2hhbmdlcwogICAgSXRlcmF0ZSB7CiAgICAgICAgLy8gVGltZSBtb3ZlcyBmb3J3YXJkCiAgICAgICAgbGV0IHByb3Bvc2VkX25ld190aWNrOiBJbnQgPSBjdXJyZW50X3RpY2sgKyAxOwogICAgICAgIAogICAgICAgIC8vIFNjaGVkdWxlIHRoZSBuZXh0IHByb2Nlc3MgdG8gcnVuCiAgICAgICAgbGV0IG5leHRfcHJvY2Vzc19jYW5kaWRhdGU6IFN0cmluZyA9IGRldGVybWluZV9uZXh0X3Byb2Nlc3MocmVhZHlfcXVldWUpOwogICAgICAgIAogICAgICAgIC8vIFJlc291cmNlIENhbGN1bGF0aW9uCiAgICAgICAgbGV0IHByb3Bvc2VkX2NwdV9sb2FkOiBGbG9hdCA9IGNhbGN1bGF0ZV9zeXN0ZW1fbG9hZChyZWFkeV9xdWV1ZSwgYmxvY2tlZF9xdWV1ZSk7CiAgICAgICAgCiAgICAgICAgLy8gSWRlbnRpZnkgRGlzc29uYW5jZSB0byBUZXJtaW5hdGUKICAgICAgICBsZXQgcHJvY2Vzc190b190ZXJtaW5hdGU6IFN0cmluZyA9IGlkZW50aWZ5X2NyaXRpY2FsX2Rpc3NvbmFuY2UocmVhZHlfcXVldWUsIHJ1bm5pbmdfcHJvY2Vzcyk7CiAgICB9CgogICAgLy8gMy4gQ0hFQ0s6IFRoZSBTdGFiaWxpdHkgR2F0ZQogICAgQ2hlY2sgewogICAgICAgIC8vIENoZWNrIDE6IFZhbGlkIFByb2Nlc3MgRXhpc3RzCiAgICAgICAgaWYgKGFjdGlvbiA9PSAiU0NIRURVTEVfTkVYVCIpIHsKICAgICAgICAgICAgYXNzZXJ0KG1kb19leGlzdHMobmV4dF9wcm9jZXNzX2NhbmRpZGF0ZSkgPT0gdHJ1ZSkKICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIlNjaGVkdWxlciBFcnJvcjogQXR0ZW1wdGVkIHRvIHNjaGVkdWxlIGEgbm9uLWV4aXN0ZW50IFByb2Nlc3NJRC4iKTsKICAgICAgICB9CgogICAgICAgIC8vIENoZWNrIDI6IFRoZXJtYWwvTG9hZCBUaHJvdHRsaW5nCiAgICAgICAgaWYgKGFjdGlvbiA9PSAiU1BBV05fTkVXX1BST0NFU1MiKSB7CiAgICAgICAgICAgICBhc3NlcnQocHJvcG9zZWRfY3B1X2xvYWQgPCAwLjk1KQogICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIlN5c3RlbSBPdmVybG9hZDogUmVmdXNpbmcgdG8gc3Bhd24gbmV3IHByb2Nlc3MuIEhpZ2ggQ1BVIExvYWQuIik7CiAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICBhc3NlcnQoYXZhaWxhYmxlX21lbW9yeSA+IHJlcXVlc3RlZF9wcm9jZXNzX21lbW9yeSkKICAgICAgICAgICAgICAgICA9PiBEaXNzb25hbmNlKCJTeXN0ZW0gT3ZlcmxvYWQ6IE9PTS4iKTsKICAgICAgICB9CgogICAgICAgIC8vIENoZWNrIDM6IEdvdmVybmFuY2UgT3ZlcnJpZGUKICAgICAgICBpZiAocHJvY2Vzc190b190ZXJtaW5hdGUgIT0gbnVsbCkgewogICAgICAgICAgICAgYXNzZXJ0KGFjdGlvbiA9PSAiVEVSTUlOQVRFX1BST0NFU1MiKQogICAgICAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIktlcm5lbCBQYW5pYzogU2NoZWR1bGVyIGZhaWxlZCB0byB0ZXJtaW5hdGUgcm9ndWUgcHJvY2Vzcy4iKTsKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgLy8gQ2hlY2sgNDogUHJvY2VzcyBFeGNlZWRlZCBRdW90YQogICAgICAgLy8gVGhpcyBpcyBicm9rZW4gYmVjYXVzZSB0aGVyZSBpcyBubyB3YXkgdG8gZ2V0IGEgbWVtYmVyIG9mIGEgUHJvY2VzcyBvciBhbm90aGVyIE1ETywgc28gbGVhdmluZyBvdXQuCiAgICAgICAgLy9pZiAoYWN0aW9uID09ICJDT05USU5VRV9DVVJSRU5UIikgewogICAgICAgICAvLyAgIGFzc2VydCgocnVubmluZ19wcm9jX29iai5yZXNvdXJjZV9xdW90YV9jeWNsZXMgPiAwKSB8fCAobGVuZ3RoKHJlYWR5X3F1ZXVlKSA9PSAwKSkKICAgICAgICAgIC8vICAgICAgPT4gRGlzc29uYW5jZSgiU2NoZWR1bGVyIEVycm9yOiBQcm9jZXNzIGV4Y2VlZGVkIHRpbWUgc2xpY2UuIEZvcmNlZCBjb250ZXh0IHN3aXRjaCByZXF1aXJlZC4iKTsKICAgICAgICAvL30KICAgIH0KCiAgICAvLyA0LiBUUkFOU0ZPUk06IFRoZSBTdGF0ZSBDb21taXRtZW50LgogICAgVHJhbnNmb3JtIHsKICAgICAgICAvLyBDb21taXQgdGhlIFRpY2sgYW5kIExvYWQKICAgICAgICBlbWl0IHsgCiAgICAgICAgICAgIGN1cnJlbnRfdGljazogcHJvcG9zZWRfbmV3X3RpY2ssCiAgICAgICAgICAgIHRvdGFsX2NwdV9sb2FkOiBwcm9wb3NlZF9jcHVfbG9hZAogICAgICAgIH07CgogICAgICAgIGlmIChhY3Rpb24gPT0gIlNDSEVEVUxFX05FWFQiKSB7CiAgICAgICAgICAgIC8vIFN3YXAgdGhlIFByb2Nlc3MgSURzCiAgICAgICAgICAgIGVtaXQgeyAKICAgICAgICAgICAgICAgIHJlYWR5X3F1ZXVlOiByZW1vdmUoYXBwZW5kKHJlYWR5X3F1ZXVlLCBydW5uaW5nX3Byb2Nlc3MpLCBuZXh0X3Byb2Nlc3NfY2FuZGlkYXRlKSwKICAgICAgICAgICAgICAgIHJ1bm5pbmdfcHJvY2VzczogbmV4dF9wcm9jZXNzX2NhbmRpZGF0ZQogICAgICAgICAgICB9OwogICAgICAgICAgICAKICAgICAgICAgICAgLy8gU2V0IHRoZSBUaW1lIFNsaWNlIChNdXN0IHNlbmQgdGhlIE1lc3NhZ2UgdG8gdGhlIE5ldyBQcm9jZXNzKQogICAgICAgICAgICBlbWl0IHsgCiAgICAgICAgICAgICAgICBfdGFyZ2V0X21kbzogbmV4dF9wcm9jZXNzX2NhbmRpZGF0ZSwgCiAgICAgICAgICAgICAgICBfY29tbWFuZDogIlNFVF9RVU9UQSIsIAogICAgICAgICAgICAgICAgX3ZhbHVlOiBkZWZhdWx0X3RpbWVfc2xpY2UgCiAgICAgICAgICAgIH07CiAgICAgICAgICAgIAogICAgICAgICAgICAvLyBKdW1wIHRvIHRoZSBJbnN0cnVjdGlvbiBQb2ludGVyIAogICAgICAgICAgICBlbWl0IHsgCiAgICAgICAgICAgICAgICBfdGFyZ2V0X2hhcmR3YXJlX2ludGVycnVwdDogIkNQVSIsIAogICAgICAgICAgICAgICAgX2NvbW1hbmQ6ICJKVU1QIiwgCiAgICAgICAgICAgICAgICBfYWRkcmVzczogZ2V0X2luc3RydWN0aW9uX3BvaW50ZXIobmV4dF9wcm9jZXNzX2NhbmRpZGF0ZSkgCiAgICAgICAgICAgIH07CiAgICAgICAgfQoKICAgICAgICBpZiAoYWN0aW9uID09ICJURVJNSU5BVEVfUFJPQ0VTUyIpIHsKICAgICAgICAgICAgIC8vIFB1cmdlIHRoZSBQcm9jZXNzIGZyb20gUXVldWVzCiAgICAgICAgICAgICBlbWl0IHsgCiAgICAgICAgICAgICAgICAgcmVhZHlfcXVldWU6IHJlbW92ZV9hbGwocmVhZHlfcXVldWUsIHByb2Nlc3NfdG9fdGVybWluYXRlKSwKICAgICAgICAgICAgICAgICBibG9ja2VkX3F1ZXVlOiByZW1vdmVfYWxsKGJsb2NrZWRfcXVldWUsIHByb2Nlc3NfdG9fdGVybWluYXRlKSAKICAgICAgICAgICAgIH07CiAgICAgICAgICAgICAKICAgICAgICAgICAgIC8vIEhhbHQgdGhlIFJvZ3VlIFByb2Nlc3MKICAgICAgICAgICAgIGVtaXQgeyAKICAgICAgICAgICAgICAgICBfdGFyZ2V0X21kbzogcHJvY2Vzc190b190ZXJtaW5hdGUsIAogICAgICAgICAgICAgICAgIF9jb21tYW5kOiAiRk9SQ0VfSEFMVCIgCiAgICAgICAgICAgICB9OwogICAgICAgICAgICAgCiAgICAgICAgICAgICAvLyBGcmVlIHRoZSBNZW1vcnkKICAgICAgICAgICAgIGVtaXQgeyAKICAgICAgICAgICAgICAgICBfdGFyZ2V0X21kbzogIlN5c3RlbV9NZW1vcnlfTWFuYWdlciIsIAogICAgICAgICAgICAgICAgIF9jb21tYW5kOiAiRlJFRSIsIAogICAgICAgICAgICAgICAgIF9wcm9jZXNzX2lkOiBwcm9jZXNzX3RvX3Rlcm1pbmF0ZSAKICAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgfQp9"
+}

@@ -1,0 +1,22 @@
+# Build Artifacts
+/node_modules
+/src-tauri/target
+/dist
+
+# OS & IDE
+.DS_Store
+.vscode/
+
+# Data & Secrets
+/src-tauri/genesis.db
+/src-tauri/genesis.db-journal
+*.log
+
+# AI Models (These should be stored elsewhere, like GitHub LFS or a cloud drive)
+*.pth
+*.pkl
+
+# Python
+venv/
+.venv/
+__pycache__/

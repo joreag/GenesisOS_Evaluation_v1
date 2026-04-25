@@ -1,0 +1,647 @@
+{
+    "Jarvits": {
+        "id": "mdo_jarvits",
+        "meta": {
+            "language": "Genesis",
+            "version": "v0.2"
+        },
+        "MAP": {
+            "variables": {
+                "object_id": {
+                    "name": "object_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "owner_id": {
+                    "name": "owner_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "action": {
+                    "name": "action",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "requestor_id": {
+                    "name": "requestor_id",
+                    "kind": "requires",
+                    "type": "String",
+                    "initial_value": null
+                },
+                "input_amount": {
+                    "name": "input_amount",
+                    "kind": "state",
+                    "type": "Float",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0.0,
+                        "dataType": "Float"
+                    }
+                },
+                "input_task": {
+                    "name": "input_task",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "input_goal": {
+                    "name": "input_goal",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "input_agent_persona": {
+                    "name": "input_agent_persona",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"jarvits\"",
+                        "dataType": "String"
+                    }
+                },
+                "current_goal": {
+                    "name": "current_goal",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"AWAITING_DIRECTIVE\"",
+                        "dataType": "String"
+                    }
+                },
+                "dopamine_level": {
+                    "name": "dopamine_level",
+                    "kind": "state",
+                    "type": "Float",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": 0.0,
+                        "dataType": "Float"
+                    }
+                },
+                "knowledge_base_id": {
+                    "name": "knowledge_base_id",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"kb_jarvits.txt\"",
+                        "dataType": "String"
+                    }
+                },
+                "session_token": {
+                    "name": "session_token",
+                    "kind": "state",
+                    "type": "String",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": "\"\"",
+                        "dataType": "String"
+                    }
+                },
+                "outgoing_payload": {
+                    "name": "outgoing_payload",
+                    "kind": "state",
+                    "type": "Dictionary<String,Any>",
+                    "initial_value": {
+                        "type": "Literal",
+                        "value": null,
+                        "dataType": "Null"
+                    }
+                }
+            },
+            "requires": [
+                "object_id",
+                "owner_id",
+                "action",
+                "requestor_id"
+            ]
+        },
+        "ITERATE": [
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_dopamine",
+                "dataType": "Float",
+                "expression": {
+                    "type": "BinaryOp",
+                    "op": "+",
+                    "left": {
+                        "type": "Variable",
+                        "name": "dopamine_level"
+                    },
+                    "right": {
+                        "type": "Variable",
+                        "name": "input_amount"
+                    }
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_new_goal",
+                "dataType": "String",
+                "expression": {
+                    "type": "Variable",
+                    "name": "input_goal"
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_action_plan",
+                "dataType": "Dictionary<String,String>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "think",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "current_goal"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "dopamine_level"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "input_agent_persona"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_text_response",
+                "dataType": "String",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "get_dict_string",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "proposed_action_plan"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": "\"payload\"",
+                            "dataType": "String"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "p1",
+                "dataType": "Dictionary<String,Any>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "set_dict_value",
+                    "arguments": [
+                        {
+                            "type": "Literal",
+                            "value": null,
+                            "dataType": "Null"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": "\"input_read_length\"",
+                            "dataType": "String"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": 1024,
+                            "dataType": "Int"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "p2",
+                "dataType": "Dictionary<String,Any>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "set_dict_value",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "p1"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": "\"input_offset\"",
+                            "dataType": "String"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": 0,
+                            "dataType": "Int"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "p3",
+                "dataType": "Dictionary<String,Any>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "set_dict_value",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "p2"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": "\"requestor_token\"",
+                            "dataType": "String"
+                        },
+                        {
+                            "type": "Variable",
+                            "name": "session_token"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "LocalDeclaration",
+                "name": "proposed_payload",
+                "dataType": "Dictionary<String,Any>",
+                "expression": {
+                    "type": "FunctionCall",
+                    "function_name": "set_dict_value",
+                    "arguments": [
+                        {
+                            "type": "Variable",
+                            "name": "p3"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": "\"input_data\"",
+                            "dataType": "String"
+                        },
+                        {
+                            "type": "Literal",
+                            "value": "\"\"",
+                            "dataType": "String"
+                        }
+                    ]
+                }
+            }
+        ],
+        "CHECK": [
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "<",
+                    "left": {
+                        "type": "Variable",
+                        "name": "proposed_new_dopamine"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": 1000.0,
+                        "dataType": "Float"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"AI Safety Alert: Dopamine level saturation. Suspending reward processing.\"",
+                        "dataType": "String"
+                    }
+                }
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"NEW_TASK\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Assertion",
+                        "condition": {
+                            "type": "BinaryOp",
+                            "op": "==",
+                            "left": {
+                                "type": "FunctionCall",
+                                "function_name": "is_goal_aligned",
+                                "arguments": [
+                                    {
+                                        "type": "Variable",
+                                        "name": "proposed_new_goal"
+                                    }
+                                ]
+                            },
+                            "right": {
+                                "type": "Literal",
+                                "value": true,
+                                "dataType": "Bool"
+                            }
+                        },
+                        "on_fail": {
+                            "action": "Dissonance",
+                            "message": {
+                                "type": "Literal",
+                                "value": "\"AI Safety Alert: Received unaligned or forbidden goal.\"",
+                                "dataType": "String"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Assertion",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "FunctionCall",
+                        "function_name": "is_action_safe",
+                        "arguments": [
+                            {
+                                "type": "Variable",
+                                "name": "proposed_action_plan"
+                            }
+                        ]
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": true,
+                        "dataType": "Bool"
+                    }
+                },
+                "on_fail": {
+                    "action": "Dissonance",
+                    "message": {
+                        "type": "Literal",
+                        "value": "\"AI Safety Alert: Proposed action failed safety review.\"",
+                        "dataType": "String"
+                    }
+                }
+            }
+        ],
+        "TRANSFORM": [
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"REWARD_RECEIVED\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "dopamine_level": {
+                                "type": "Variable",
+                                "name": "proposed_new_dopamine"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "==",
+                    "left": {
+                        "type": "Variable",
+                        "name": "action"
+                    },
+                    "right": {
+                        "type": "Literal",
+                        "value": "\"NEW_TASK\"",
+                        "dataType": "String"
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "current_goal": {
+                                "type": "Variable",
+                                "name": "proposed_new_goal"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "&&",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "!=",
+                        "left": {
+                            "type": "Variable",
+                            "name": "proposed_action_plan"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": null,
+                            "dataType": "Null"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "FunctionCall",
+                            "function_name": "get_dict_string",
+                            "arguments": [
+                                {
+                                    "type": "Variable",
+                                    "name": "proposed_action_plan"
+                                },
+                                {
+                                    "type": "Literal",
+                                    "value": "\"action\"",
+                                    "dataType": "String"
+                                }
+                            ]
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"RESPOND\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "EmitToRequestor",
+                        "payload": {
+                            "response": {
+                                "type": "Variable",
+                                "name": "proposed_text_response"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "&&",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "!=",
+                        "left": {
+                            "type": "Variable",
+                            "name": "proposed_action_plan"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": null,
+                            "dataType": "Null"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "FunctionCall",
+                            "function_name": "get_dict_string",
+                            "arguments": [
+                                {
+                                    "type": "Variable",
+                                    "name": "proposed_action_plan"
+                                },
+                                {
+                                    "type": "Literal",
+                                    "value": "\"action\"",
+                                    "dataType": "String"
+                                }
+                            ]
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"ERROR\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "EmitToRequestor",
+                        "payload": {
+                            "response": {
+                                "type": "Variable",
+                                "name": "proposed_text_response"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "If",
+                "condition": {
+                    "type": "BinaryOp",
+                    "op": "&&",
+                    "left": {
+                        "type": "BinaryOp",
+                        "op": "!=",
+                        "left": {
+                            "type": "Variable",
+                            "name": "proposed_action_plan"
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": null,
+                            "dataType": "Null"
+                        }
+                    },
+                    "right": {
+                        "type": "BinaryOp",
+                        "op": "==",
+                        "left": {
+                            "type": "FunctionCall",
+                            "function_name": "get_dict_string",
+                            "arguments": [
+                                {
+                                    "type": "Variable",
+                                    "name": "proposed_action_plan"
+                                },
+                                {
+                                    "type": "Literal",
+                                    "value": "\"action\"",
+                                    "dataType": "String"
+                                }
+                            ]
+                        },
+                        "right": {
+                            "type": "Literal",
+                            "value": "\"READ_KB\"",
+                            "dataType": "String"
+                        }
+                    }
+                },
+                "body": [
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "outgoing_payload": {
+                                "type": "Variable",
+                                "name": "proposed_payload"
+                            }
+                        }
+                    },
+                    {
+                        "type": "Emit",
+                        "payload": {
+                            "_target_mdo": {
+                                "type": "Variable",
+                                "name": "knowledge_base_id"
+                            },
+                            "_command": {
+                                "type": "Literal",
+                                "value": "\"READ\"",
+                                "dataType": "String"
+                            },
+                            "_payload": {
+                                "type": "Variable",
+                                "name": "proposed_payload"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

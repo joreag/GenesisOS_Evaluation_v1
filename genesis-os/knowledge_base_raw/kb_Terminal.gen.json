@@ -1,0 +1,83 @@
+{
+  "file_id": "Terminal.gen",
+  "strategy": "genlang",
+  "mict_summary": {
+    "MAP": {
+      "data_dictionary": {
+        "object_id": {
+          "type": "String",
+          "name": "object_id",
+          "initialValue": null
+        },
+        "owner_id": {
+          "type": "String",
+          "name": "owner_id",
+          "initialValue": null
+        },
+        "action": {
+          "type": "String",
+          "name": "action",
+          "initialValue": null
+        },
+        "requestor_id": {
+          "type": "String",
+          "name": "requestor_id",
+          "initialValue": null
+        },
+        "requestor_token": {
+          "type": "String",
+          "name": "requestor_token",
+          "initialValue": null
+        },
+        "input_command": {
+          "type": "String",
+          "name": "input_command",
+          "initialValue": null
+        },
+        "security_policy_id": {
+          "type": "String",
+          "name": "security_policy_id",
+          "initialValue": "policy_safe_commands"
+        },
+        "is_command_safe": {
+          "type": "Bool",
+          "name": "is_command_safe",
+          "initialValue": "evaluate_policy(security_policy_id, input_command)"
+        },
+        "proposed_execution_target": {
+          "type": "String",
+          "name": "proposed_execution_target",
+          "initialValue": "input_command"
+        }
+      }
+    },
+    "ITERATE": {
+      "logic_blocks": [
+        {
+          "type": "LOGIC_BLOCK",
+          "condition": "action == \"EXECUTE\"",
+          "actions": [],
+          "controlVars": [
+            "action"
+          ]
+        }
+      ]
+    },
+    "CHECK": {
+      "security_findings": []
+    },
+    "TRANSFORM": {
+      "generated_code": "## MICT FUNCTIONAL SPECIFICATION\n\n"
+    }
+  },
+  "dependency_graph": {
+    "is_command_safe": [
+      "input_command",
+      "security_policy_id"
+    ],
+    "proposed_execution_target": [
+      "input_command"
+    ]
+  },
+  "raw_content": "Ly8gVGVybWluYWwuZ2VuIHYxLjAKLy8gVGhlIE1ETyBnYXRla2VlcGVyIGZvciBIb3N0IE9TIGV4ZWN1dGlvbi4KCk5vZGUgVGVybWluYWwgewogICAgTWFwIHsKICAgICAgICByZXF1aXJlcyBvYmplY3RfaWQ6IFN0cmluZzsKICAgICAgICByZXF1aXJlcyBvd25lcl9pZDogU3RyaW5nOwogICAgICAgIHJlcXVpcmVzIGFjdGlvbjogU3RyaW5nOwogICAgICAgIHJlcXVpcmVzIHJlcXVlc3Rvcl9pZDogU3RyaW5nOwogICAgICAgIHJlcXVpcmVzIHJlcXVlc3Rvcl90b2tlbjogU3RyaW5nOyAvLyBaRVJPLVRSVVNUIFJFUVVJUkVECgogICAgICAgIC8vIFRoZSBjb21tYW5kIHRvIHJ1biBvbiB0aGUgaG9zdCBPUwogICAgICAgIHJlcXVpcmVzIGlucHV0X2NvbW1hbmQ6IFN0cmluZzsKICAgICAgICAKICAgICAgICAvLyBUaGUgT01aVEEgUG9saWN5IGZvciBhbGxvd2VkIGNvbW1hbmRzCiAgICAgICAgcmVxdWlyZXMgc2VjdXJpdHlfcG9saWN5X2lkOiBTdHJpbmcgPSAicG9saWN5X3NhZmVfY29tbWFuZHMiOwogICAgfQoKICAgIEl0ZXJhdGUgewogICAgICAgIC8vIFdlIGV2YWx1YXRlIHRoZSBjb21tYW5kIGFnYWluc3QgdGhlIHNlY3VyaXR5IHBvbGljeS4KICAgICAgICAvLyBUaGUgJ2V2YWx1YXRlX3BvbGljeScgc3lzY2FsbCB3aWxsIGNoZWNrIGFnYWluc3QgYSBsaXN0IG9mIGZvcmJpZGRlbiBjb21tYW5kcy4KICAgICAgICBsZXQgaXNfY29tbWFuZF9zYWZlOiBCb29sID0gZXZhbHVhdGVfcG9saWN5KHNlY3VyaXR5X3BvbGljeV9pZCwgaW5wdXRfY29tbWFuZCk7CiAgICAgICAgCiAgICAgICAgLy8gVGhlIGNvbW1hbmQgdGhhdCB3aWxsIGJlIHNlbnQgdG8gdGhlIGhvc3QgT1MgaGFyZHdhcmUgaW50ZXJydXB0CiAgICAgICAgbGV0IHByb3Bvc2VkX2V4ZWN1dGlvbl90YXJnZXQ6IFN0cmluZyA9IGlucHV0X2NvbW1hbmQ7CiAgICB9CgogICAgQ2hlY2sgewogICAgICAgIC8vIDEuIFplcm8tVHJ1c3QgQXV0aGVudGljYXRpb24KICAgICAgICBhc3NlcnQoaXNfc2Vzc2lvbl92YWxpZChyZXF1ZXN0b3JfdG9rZW4pID09IHRydWUpCiAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIlNlY3VyaXR5IFZpb2xhdGlvbjogSW52YWxpZCBzZXNzaW9uIHRva2VuIGZvciBUZXJtaW5hbCBhY2Nlc3MuIik7CiAgICAgICAgICAgIAogICAgICAgIC8vIDIuIEF1dGhvcml6YXRpb24KICAgICAgICBhc3NlcnQoKHJlcXVlc3Rvcl9pZCA9PSBvd25lcl9pZCkgfHwgKHJlcXVlc3Rvcl9pZCA9PSAiU3lzdGVtX1Jvb3QiKSkKICAgICAgICAgICAgPT4gRGlzc29uYW5jZSgiU2VjdXJpdHkgVmlvbGF0aW9uOiBVbmF1dGhvcml6ZWQgYWNjZXNzIHRvIFRlcm1pbmFsLiIpOwoKICAgICAgICAvLyAzLiBPTVpUQSBDb21tYW5kIEluc3BlY3Rpb24KICAgICAgICBhc3NlcnQoaXNfY29tbWFuZF9zYWZlID09IHRydWUpCiAgICAgICAgICAgID0+IERpc3NvbmFuY2UoIk9NWlRBIFZpb2xhdGlvbjogQ29tbWFuZCByZWplY3RlZCBieSBTZWN1cml0eSBQb2xpY3kuIE1hbGljaW91cyBhY3Rpdml0eSBzdXNwZWN0ZWQuIik7CiAgICB9CgogICAgVHJhbnNmb3JtIHsKICAgICAgICBpZiAoYWN0aW9uID09ICJFWEVDVVRFIikgewogICAgICAgICAgICAvLyBUaGlzIHNwZWNpYWwgZGlyZWN0aXZlIHRlbGxzIHRoZSBSdXN0IGVuZ2luZSB0byBydW4gdGhlIGNvbW1hbmQgb24gdGhlIGhvc3QuCiAgICAgICAgICAgIC8vIEl0IGlzIE5PVCBhIHN0YW5kYXJkIElQQyBtZXNzYWdlLgogICAgICAgICAgICBlbWl0IHsKICAgICAgICAgICAgICAgIF90YXJnZXRfaGFyZHdhcmVfaW50ZXJydXB0OiAiSE9TVF9PUyIsCiAgICAgICAgICAgICAgICBfY29tbWFuZDogIlJVTl9CQVNIIiwKICAgICAgICAgICAgICAgIF9wYXlsb2FkOiBwcm9wb3NlZF9leGVjdXRpb25fdGFyZ2V0CiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgfQp9"
+}
